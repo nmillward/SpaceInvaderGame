@@ -7,29 +7,29 @@ import com.nickmillward.hackweekspacegame.view.SpaceAnimationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SpaceAnimationView view;
+    private SpaceAnimationView spaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        view = (SpaceAnimationView) findViewById(R.id.view_spaceAnimationView);
+        spaceView = (SpaceAnimationView) findViewById(R.id.view_spaceAnimationView);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (view != null) {
-            //resume SpaceAnimationView
+        if (spaceView != null) {
+            spaceView.onActivityResume();
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (view != null) {
-            //pause SpaceAnimationView
+        if (spaceView != null) {
+            spaceView.onActivityPause();
         }
     }
 }
