@@ -122,8 +122,8 @@ public class SpaceAnimationView extends FrameLayout {
 
         ArrayList<Star> removalArray = new ArrayList<>();
         for (Star star : backgroundStars) {
-            star.x -= star.speed;
-            if (star.x < 0.f) {
+            star.y -= star.speed;
+            if (star.y < 0.f) {
                 removalArray.add(star);
             }
         }
@@ -131,14 +131,16 @@ public class SpaceAnimationView extends FrameLayout {
         removalArray.clear();
     }
 
-    //Place new Star at random height on screen and add it to List
+    //Place new Star at random width on screen and add it to List
+    //star.y = 0 to start from Top of screen
+    //star.speed is negative to reverse direction of stars
     private void emitStar(int radius, int color, int speed, ArrayList<Star> collection) {
         Star star = new Star();
-        star.x = getWidth() + radius;
-        star.y = (float) (Math.random() * getHeight());
+        star.x = (float) (Math.random() * getWidth());
+        star.y = 0;
         star.radius = radius;
         star.color = color;
-        star.speed = speed;
+        star.speed = -1 * speed;
         collection.add(star);
     }
 }
