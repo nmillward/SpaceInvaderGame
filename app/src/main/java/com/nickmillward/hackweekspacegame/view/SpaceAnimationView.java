@@ -31,11 +31,11 @@ public class SpaceAnimationView extends FrameLayout {
     private ArrayList<Star> backgroundStars = new ArrayList<>();
 
     public SpaceAnimationView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public SpaceAnimationView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public SpaceAnimationView(Context context, AttributeSet attrs, int defStyleAttr) {
