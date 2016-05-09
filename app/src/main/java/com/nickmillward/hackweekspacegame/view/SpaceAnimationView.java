@@ -15,6 +15,7 @@ import java.util.TimerTask;
 
 /**
  * Created by nmillward on 5/7/16.
+ * Hackweek - May 2016
  */
 public class SpaceAnimationView extends FrameLayout {
 

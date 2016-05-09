@@ -2,6 +2,7 @@ package com.nickmillward.hackweekspacegame.entity;
 
 /**
  * Created by nmillward on 5/7/16.
+ * Hackweek - May 2016
  *
  * Background Star to simulate depth / movement / speed of space environment
  */
