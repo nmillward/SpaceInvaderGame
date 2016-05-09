@@ -6,4 +6,6 @@
 
     <color name="colorBlack">#000000</color>
 
+    <color name="shipColor">#FF9BFAD0</color>
+
 </resources>

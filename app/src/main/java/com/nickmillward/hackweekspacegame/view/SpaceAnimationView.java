@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
+import com.nickmillward.hackweekspacegame.entity.Ship;
 import com.nickmillward.hackweekspacegame.entity.Star;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class SpaceAnimationView extends FrameLayout {
     private Paint starPaint;
     private int backgroundStarTicker;
     private ArrayList<Star> backgroundStars = new ArrayList<>();
+
+    private Ship ship;
 
     public SpaceAnimationView(Context context) {
         this(context, null);
@@ -91,6 +94,9 @@ public class SpaceAnimationView extends FrameLayout {
                 starPaint.setColor(star.color);
                 canvas.drawCircle(star.x, star.y, star.radius, starPaint);
             }
+            if ( ship != null) {
+                ship.drawShip(canvas);
+            }
         }
     }
 
@@ -99,6 +105,14 @@ public class SpaceAnimationView extends FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
+
+        if (ship == null) {
+            ship = new Ship();
+            ship.createShipBitmap(width);
+            ship.setY(height * 7/8);        //Set ship towards bottom of screen
+            ship.setCenterX(width / 2);
+        }
+
     }
 
     @Override
