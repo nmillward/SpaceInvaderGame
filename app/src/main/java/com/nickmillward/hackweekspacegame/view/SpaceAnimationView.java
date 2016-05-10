@@ -5,8 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 
+import com.nickmillward.hackweekspacegame.Util.MathUtil;
 import com.nickmillward.hackweekspacegame.entity.Ship;
 import com.nickmillward.hackweekspacegame.entity.Star;
 
@@ -22,6 +24,7 @@ public class SpaceAnimationView extends FrameLayout {
 
     public static final int FOREGROUND_ASTROID_INTERVAL = 20;
     public static final int BACKGROUND_STAR_INTERVAL = 30;
+    public static final float ROTATION_RANGE = 20.f;
 
     private TimerTask spaceViewTask;
     private Timer spaceViewTimer;
@@ -34,6 +37,10 @@ public class SpaceAnimationView extends FrameLayout {
 
     private Ship ship;
 
+    private float lastX;
+    private float minX, maxX;
+    private float touchSlop;
+
     public SpaceAnimationView(Context context) {
         this(context, null);
     }
@@ -45,7 +52,8 @@ public class SpaceAnimationView extends FrameLayout {
     public SpaceAnimationView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        setWillNotDraw(false);  //All ViewGroup sub-classes to call onDraw
+        setWillNotDraw(false);                              //All ViewGroup sub-classes to call onDraw
+        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     public void initSpaceViewTask() {
@@ -53,7 +61,10 @@ public class SpaceAnimationView extends FrameLayout {
             @Override
             public void run() {
                 synchronized (spaceViewLock) {
-                    updateStar();
+                    if (ship != null) {
+                        ship.onFrame();
+                        updateStar();
+                    }
                 }
                 postInvalidate();
             }
@@ -109,9 +120,12 @@ public class SpaceAnimationView extends FrameLayout {
         if (ship == null) {
             ship = new Ship();
             ship.createShipBitmap(width);
-            ship.setY(height * 7/8);        //Set ship towards bottom of screen
-            ship.setCenterX(width / 2);
+            ship.setY(height * 7/8);                                    //Set ship towards bottom of screen
+            ship.setX((width / 2) - (ship.getShipWidth() / 2));         //Set ship to center X
+//            ship.setCenterX(width / 2);
         }
+        maxX = width - ship.getShipWidth();
+        minX = 0;
 
     }
 
@@ -122,6 +136,28 @@ public class SpaceAnimationView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        synchronized (spaceViewLock) {
+
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    lastX = event.getX();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                case MotionEvent.ACTION_UP:
+                    float deltaX = event.getX() - lastX;
+                    lastX = event.getX();
+                    if (ship != null) {
+                        ship.setX(Math.min(maxX, Math.max(minX, MathUtil.lerp(ship.getX(), ship.getX() + deltaX, 0.7f))));
+                        if (deltaX > 0) {
+                            ship.setRotation(MathUtil.lerp(ship.getRotation(), ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.4f));
+                        } else if (deltaX < 0) {
+                            ship.setRotation(MathUtil.lerp(ship.getRotation(), -ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.4f));
+                        }
+                    }
+                    break;
+            }
+
+        }
         return super.onTouchEvent(event);
     }
 
