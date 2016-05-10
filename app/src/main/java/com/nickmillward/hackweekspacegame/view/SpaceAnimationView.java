@@ -52,7 +52,7 @@ public class SpaceAnimationView extends FrameLayout {
     public SpaceAnimationView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        setWillNotDraw(false);                              //All ViewGroup sub-classes to call onDraw
+        setWillNotDraw(false);   //All ViewGroup sub-classes to call onDraw
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
@@ -120,9 +120,8 @@ public class SpaceAnimationView extends FrameLayout {
         if (ship == null) {
             ship = new Ship();
             ship.createShipBitmap(width);
-            ship.setY(height * 7/8);                                    //Set ship towards bottom of screen
             ship.setX((width / 2) - (ship.getShipWidth() / 2));         //Set ship to center X
-//            ship.setCenterX(width / 2);
+            ship.setCenterY(height * 3/4);                              //Set ship towards bottom of screen
         }
         maxX = width - ship.getShipWidth();
         minX = 0;
