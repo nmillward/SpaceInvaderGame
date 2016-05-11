@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 
 import com.nickmillward.hackweekspacegame.Util.MathUtil;
 import com.nickmillward.hackweekspacegame.entity.Ship;
+import com.nickmillward.hackweekspacegame.entity.Smoke;
 import com.nickmillward.hackweekspacegame.entity.Star;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class SpaceAnimationView extends FrameLayout {
 
     public static final int FOREGROUND_ASTROID_INTERVAL = 20;
     public static final int BACKGROUND_STAR_INTERVAL = 30;
+    public static final int SMOKE_INTERVAL = 2;
     public static final float ROTATION_RANGE = 20.f;
 
     private TimerTask spaceViewTask;
@@ -34,6 +36,9 @@ public class SpaceAnimationView extends FrameLayout {
     private Paint starPaint;
     private int backgroundStarTicker;
     private ArrayList<Star> backgroundStars = new ArrayList<>();
+
+    private int smokeTicker;
+    private ArrayList<Smoke> smokes = new ArrayList<>();
 
     private Ship ship;
 
@@ -65,6 +70,7 @@ public class SpaceAnimationView extends FrameLayout {
                     if (ship != null) {
                         ship.onFrame();
                         updateStar();
+                        updateSmoke();
                     }
                 }
                 postInvalidate();
@@ -106,7 +112,10 @@ public class SpaceAnimationView extends FrameLayout {
                 starPaint.setColor(star.color);
                 canvas.drawCircle(star.x, star.y, star.radius, starPaint);
             }
-            if ( ship != null) {
+            if (ship != null) {
+                for (Smoke smoke : smokes) {
+                    smoke.drawSmoke(canvas);
+                }
                 ship.drawShip(canvas);
             }
         }
@@ -176,6 +185,30 @@ public class SpaceAnimationView extends FrameLayout {
         return super.onTouchEvent(event);
     }
 
+    private void updateSmoke() {
+        if (smokeTicker++ == SMOKE_INTERVAL) {
+            //emit smoke
+            Smoke smoke = new Smoke(ship.getShipWidth() / 4);
+            float smokeDisplacement = (float) (-ship.getShipHeight() / 6 + Math.random() * ship.getShipHeight() / 2);
+            smoke.y = ship.getY() + ship.getShipHeight();
+            smoke.x = ship.getX() + ship.getShipWidth() / 2 - smoke.diameter + smokeDisplacement;
+            smokes.add(smoke);
+            smokeTicker = 0;
+        }
+
+        ArrayList<Smoke> removalArray = new ArrayList<>();
+        for (Smoke smoke : smokes) {
+            //rotate and disburse smoke
+            smoke.rotation = MathUtil.lerp(smoke.rotation, 360.f, 0.05f);
+            smoke.y = MathUtil.lerp(smoke.y, -ship.getShipHeight() / 2, -.01f * smoke.rotation / 400);
+            if (smoke.y >= ship.getY() + ship.getShipHeight() * 2) {
+                removalArray.add(smoke);
+            }
+        }
+        smokes.removeAll(removalArray);
+        removalArray.clear();
+    }
+
     private void updateStar() {
         if (backgroundStarTicker++ == BACKGROUND_STAR_INTERVAL) {
             backgroundStarTicker = 0;
@@ -193,7 +226,7 @@ public class SpaceAnimationView extends FrameLayout {
                 removalArray.add(star);
             }
         }
-        removalArray.removeAll(backgroundStars);
+        backgroundStars.remove(removalArray);
         removalArray.clear();
     }
 
