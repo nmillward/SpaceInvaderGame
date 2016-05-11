@@ -7,8 +7,8 @@ package com.nickmillward.hackweekspacegame.Util;
  */
 public class MathUtil {
 
-    public static float lerp(float a, float b, float pct) {
-        return a + pct * (b - a);
+    public static float lerp(float start, float end, float percent) {
+        return start + percent * (end - start);
     }
 
 }

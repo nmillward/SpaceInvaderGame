@@ -37,8 +37,9 @@ public class SpaceAnimationView extends FrameLayout {
 
     private Ship ship;
 
-    private float lastX;
-    private float minX, maxX;
+    private float lastX, lastY;
+    private float minX, minY;
+    private float maxX, maxY;
     private float touchSlop;
 
     public SpaceAnimationView(Context context) {
@@ -121,10 +122,13 @@ public class SpaceAnimationView extends FrameLayout {
             ship = new Ship();
             ship.createShipBitmap(width);
             ship.setX((width / 2) - (ship.getShipWidth() / 2));         //Set ship to center X
-            ship.setCenterY(height * 3/4);                              //Set ship towards bottom of screen
+            ship.setY(height * 3/4);                                    //Set ship towards bottom of screen
         }
         maxX = width - ship.getShipWidth();
         minX = 0;
+
+        maxY = height - ship.getShipHeight();
+        minY = 0;
 
     }
 
@@ -140,18 +144,30 @@ public class SpaceAnimationView extends FrameLayout {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     lastX = event.getX();
+                    lastY = event.getY();
                     return true;
+
                 case MotionEvent.ACTION_MOVE:
                 case MotionEvent.ACTION_UP:
+
                     float deltaX = event.getX() - lastX;
+                    float deltaY = event.getY() - lastY;
                     lastX = event.getX();
+                    lastY = event.getY();
+
                     if (ship != null) {
                         ship.setX(Math.min(maxX, Math.max(minX, MathUtil.lerp(ship.getX(), ship.getX() + deltaX, 1.0f))));  //1.0f = 100% to follow finger movement
+                        ship.setY(Math.min(maxY, Math.max(minY, MathUtil.lerp(ship.getY(), ship.getY() + deltaY, 1.0f))));
                         if (deltaX > 0) {
                             ship.setRotation(MathUtil.lerp(ship.getRotation(), ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.3f));
                         } else if (deltaX < 0) {
                             ship.setRotation(MathUtil.lerp(ship.getRotation(), -ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.3f));
                         }
+//                        else if (deltaY > 0) {
+//                            //TODO: Tilt ship forward
+//                        } else if (deltaY < 0) {
+//                            //TODO: Tilt ship backwards
+//                        }
                     }
                     break;
             }

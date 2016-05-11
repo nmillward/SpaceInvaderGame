@@ -75,7 +75,7 @@ public class Ship {
         if (Math.abs(x - lastX) <= shipHeight / 16) {
             rotation = MathUtil.lerp(rotation, 0.f, 0.1f);
         }
-        y = centerY + currentDrift;
+//        y = centerY + currentDrift;
     }
 
     public int getShipHeight() {
