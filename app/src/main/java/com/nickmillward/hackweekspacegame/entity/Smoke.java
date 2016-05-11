@@ -34,6 +34,7 @@ public class Smoke {
         Canvas canvas = new Canvas(smokeBitmap);
         canvas.drawColor(0x88616161); //grey
 //        canvas.drawColor(0x88ff0000);   //red
+//        canvas.drawColor(0x88fb7200);   //orange
     }
 
     public void drawSmoke(Canvas canvas) {

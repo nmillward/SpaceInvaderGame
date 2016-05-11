@@ -45,7 +45,7 @@ public class Ship {
         shipHeight = screenWidth / 8;
         shipWidth = shipHeight * 3/4;
 
-        int shipBottomCorner = shipHeight / 4;
+        int shipBottomCorner = shipHeight / 6;
 
         Path shipPath = new Path();
         shipPath.moveTo(0, shipHeight - shipBottomCorner);              //Left most point of ship
