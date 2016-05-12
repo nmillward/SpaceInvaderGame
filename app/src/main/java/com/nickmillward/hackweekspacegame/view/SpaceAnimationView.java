@@ -13,6 +13,7 @@ import com.nickmillward.hackweekspacegame.entity.Enemy;
 import com.nickmillward.hackweekspacegame.entity.Ship;
 import com.nickmillward.hackweekspacegame.entity.Smoke;
 import com.nickmillward.hackweekspacegame.entity.Star;
+import com.nickmillward.hackweekspacegame.entity.Treasure;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -43,6 +44,9 @@ public class SpaceAnimationView extends FrameLayout {
 
     private int enemyTicker;
     private ArrayList<Enemy> enemies = new ArrayList<>();
+
+    private int treasureTicker;
+    private ArrayList<Treasure> treasures = new ArrayList<>();
 
     private Ship ship;
 
@@ -76,6 +80,7 @@ public class SpaceAnimationView extends FrameLayout {
                         updateStar();
                         updateSmoke();
                         updateEnemy();
+                        updateTreasure();
                     }
                 }
                 postInvalidate();
@@ -128,6 +133,10 @@ public class SpaceAnimationView extends FrameLayout {
 
             for (Enemy enemy : enemies) {
                 enemy.drawEnemy(canvas);
+            }
+
+            for (Treasure treasure : treasures) {
+                treasure.drawTreasure(canvas);
             }
         }
     }
@@ -194,6 +203,29 @@ public class SpaceAnimationView extends FrameLayout {
 
         }
         return super.onTouchEvent(event);
+    }
+
+    private void updateTreasure() {
+        if (treasureTicker++ == FOREGROUND_INTERVAL * 2) {
+            treasureTicker = 0;
+
+            Treasure treasure = new Treasure(ship.getShipWidth() / 2);
+            treasure.x = (float) Math.random() * getWidth();
+            treasure.y = 0;
+            treasure.speed = (getWidth() / 128) * -1;
+
+            treasures.add(treasure);
+        }
+
+        ArrayList<Treasure> removalArray = new ArrayList<>();
+        for (Treasure treasure : treasures) {
+            treasure.y -= treasure.speed;
+            if (treasure.y < 0.f) {
+                removalArray.add(treasure);
+            }
+        }
+        treasures.removeAll(removalArray);
+        removalArray.clear();
     }
 
     private void updateEnemy() {

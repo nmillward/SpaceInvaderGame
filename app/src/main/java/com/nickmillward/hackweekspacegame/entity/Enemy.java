@@ -17,13 +17,9 @@ public class Enemy {
 
     public float x, y;
     public float speed;
-
     private float diameter;
-    private float rotation;
-    private int color;
-    private int enemyHeight, enemyWidth;
 
-    private Paint enemyPaint;
+    private Paint enemyPaint, enemyBorderPaint;
     private Bitmap enemyBitmap;
     private Matrix enemyMatrix = new Matrix();
 
@@ -32,9 +28,11 @@ public class Enemy {
 
         enemyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         enemyPaint.setStyle(Paint.Style.STROKE);
-        enemyPaint.setStrokeWidth(diameter / 10);
-        enemyPaint.setColor(0xffffffff);
-//        enemyPaint.setColor(0xff323299);
+        enemyPaint.setStrokeWidth(diameter / 8);
+        enemyPaint.setColor(0xff323299);
+
+        enemyBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        enemyBorderPaint.setColor(0xffE26660);
 
         if (enemyBitmap == null) {
             createEnemyBitmap();
@@ -53,7 +51,8 @@ public class Enemy {
 
         enemyBitmap = Bitmap.createBitmap((int) diameter, (int) diameter, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(enemyBitmap);
-        canvas.drawPath(enemyPath, enemyPaint);
+        canvas.drawRect(0, 0, diameter, diameter, enemyBorderPaint);
+//        canvas.drawPath(enemyPath, enemyPaint);
     }
 
     public void drawEnemy(Canvas canvas) {
