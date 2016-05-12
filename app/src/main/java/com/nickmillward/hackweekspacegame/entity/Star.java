@@ -8,8 +8,7 @@ package com.nickmillward.hackweekspacegame.entity;
  */
 public class Star {
 
-    public float x;
-    public float y;
+    public float x, y;
     public int color;
     public int radius;
     public float speed;

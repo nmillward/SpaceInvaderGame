@@ -9,6 +9,7 @@ import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 
 import com.nickmillward.hackweekspacegame.Util.MathUtil;
+import com.nickmillward.hackweekspacegame.entity.Enemy;
 import com.nickmillward.hackweekspacegame.entity.Ship;
 import com.nickmillward.hackweekspacegame.entity.Smoke;
 import com.nickmillward.hackweekspacegame.entity.Star;
@@ -23,7 +24,7 @@ import java.util.TimerTask;
  */
 public class SpaceAnimationView extends FrameLayout {
 
-    public static final int FOREGROUND_ASTROID_INTERVAL = 20;
+    public static final int FOREGROUND_INTERVAL = 20;
     public static final int BACKGROUND_STAR_INTERVAL = 30;
     public static final int SMOKE_INTERVAL = 2;
     public static final float ROTATION_RANGE = 20.f;
@@ -39,6 +40,9 @@ public class SpaceAnimationView extends FrameLayout {
 
     private int smokeTicker;
     private ArrayList<Smoke> smokes = new ArrayList<>();
+
+    private int enemyTicker;
+    private ArrayList<Enemy> enemies = new ArrayList<>();
 
     private Ship ship;
 
@@ -71,6 +75,7 @@ public class SpaceAnimationView extends FrameLayout {
                         ship.onFrame();
                         updateStar();
                         updateSmoke();
+                        updateEnemy();
                     }
                 }
                 postInvalidate();
@@ -111,12 +116,18 @@ public class SpaceAnimationView extends FrameLayout {
             for (Star star : backgroundStars) {
                 starPaint.setColor(star.color);
                 canvas.drawCircle(star.x, star.y, star.radius, starPaint);
+
             }
+
             if (ship != null) {
                 for (Smoke smoke : smokes) {
                     smoke.drawSmoke(canvas);
                 }
                 ship.drawShip(canvas);
+            }
+
+            for (Enemy enemy : enemies) {
+                enemy.drawEnemy(canvas);
             }
         }
     }
@@ -183,6 +194,29 @@ public class SpaceAnimationView extends FrameLayout {
 
         }
         return super.onTouchEvent(event);
+    }
+
+    private void updateEnemy() {
+        if (enemyTicker++ == FOREGROUND_INTERVAL) {
+            enemyTicker = 0;
+
+            Enemy enemy = new Enemy(ship.getShipWidth() / 2);
+            enemy.x = (float) (Math.random() * getWidth());
+            enemy.y = 0;
+            enemy.speed = (getWidth() / 128) * -1;
+
+            enemies.add(enemy);
+        }
+
+        ArrayList<Enemy> removalArray = new ArrayList<>();
+        for (Enemy enemy : enemies) {
+            enemy.y -= enemy.speed;
+            if (enemy.y < 0.f) {
+                removalArray.add(enemy);
+            }
+        }
+        enemies.removeAll(removalArray);
+        removalArray.clear();
     }
 
     private void updateSmoke() {

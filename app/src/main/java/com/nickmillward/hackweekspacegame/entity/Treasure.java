@@ -7,4 +7,9 @@ package com.nickmillward.hackweekspacegame.entity;
  * To be collected to earn points
  */
 public class Treasure {
+
+    public float x, y;
+    public float diameter;
+    public float rotation;
+
 }

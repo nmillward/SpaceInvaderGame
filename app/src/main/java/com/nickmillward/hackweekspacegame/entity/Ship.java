@@ -40,8 +40,7 @@ public class Ship {
         driftDirection = Direction.OUTWARD;
     }
 
-    public void createShipBitmap(int screenWidth) {
-        //Use device screen size to determine ship size
+    public void createShipBitmap(int screenWidth) {     //Use device screen size to determine ship size
         shipHeight = screenWidth / 8;
         shipWidth = shipHeight * 3/4;
 
@@ -75,7 +74,6 @@ public class Ship {
         if (Math.abs(x - lastX) <= shipHeight / 16) {
             rotation = MathUtil.lerp(rotation, 0.f, 0.1f);
         }
-//        y = centerY + currentDrift;
     }
 
     public int getShipHeight() {

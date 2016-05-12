@@ -22,6 +22,7 @@ public class Smoke {
     public Smoke(float diameter) {
         this.diameter = diameter;
         smokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
         if (smokeBitmap == null) {
             createSmokeBitmap();
         } else if (diameter != smokeBitmap.getWidth()) {
