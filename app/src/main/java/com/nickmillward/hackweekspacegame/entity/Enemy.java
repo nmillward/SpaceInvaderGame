@@ -18,6 +18,7 @@ public class Enemy {
     public float x, y;
     public float speed;
     public float rotation;
+    public boolean shouldDelete = false;
     private float diameter;
 
     private Paint enemyPaint, enemyBorderPaint;
