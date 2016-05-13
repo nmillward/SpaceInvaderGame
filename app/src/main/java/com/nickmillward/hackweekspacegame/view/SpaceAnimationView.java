@@ -4,10 +4,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
+import com.nickmillward.hackweekspacegame.R;
 import com.nickmillward.hackweekspacegame.Util.MathUtil;
 import com.nickmillward.hackweekspacegame.entity.Enemy;
 import com.nickmillward.hackweekspacegame.entity.Ship;
@@ -15,6 +20,7 @@ import com.nickmillward.hackweekspacegame.entity.Smoke;
 import com.nickmillward.hackweekspacegame.entity.Star;
 import com.nickmillward.hackweekspacegame.entity.Treasure;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,6 +35,9 @@ public class SpaceAnimationView extends FrameLayout {
     public static final int BACKGROUND_STAR_INTERVAL = 30;
     public static final int SMOKE_INTERVAL = 2;
     public static final float ROTATION_RANGE = 20.f;
+
+    private TextView scoreTitleView, scoreCountView;
+    protected DecimalFormat scoreFormatter = new DecimalFormat("#,###,###");
 
     private TimerTask spaceViewTask;
     private Timer spaceViewTimer;
@@ -68,6 +77,7 @@ public class SpaceAnimationView extends FrameLayout {
         starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         setWillNotDraw(false);   //All ViewGroup sub-classes to call onDraw
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        addScoreView();
     }
 
     public void initSpaceViewTask() {
@@ -310,4 +320,22 @@ public class SpaceAnimationView extends FrameLayout {
         star.speed = -1 * speed;
         collection.add(star);
     }
+
+    private void addScoreView() {
+//        String formattedScore = scoreFormatter.format(score);
+
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        layoutParams.setMargins(16, 16, 16, 16);
+
+        scoreTitleView = new TextView(getContext());
+        scoreTitleView.setLayoutParams(layoutParams);
+        scoreTitleView.setText(getResources().getString(R.string.score));
+//        scoreTitleView.setText(String.format(getResources().getString(R.string.score), formattedScore));
+        scoreTitleView.setTextColor(getResources().getColor(R.color.colorWhiteLight));
+        scoreTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        addView(scoreTitleView);
+
+    }
+
 }
