@@ -17,6 +17,7 @@ public class Enemy {
 
     public float x, y;
     public float speed;
+    public float rotation;
     private float diameter;
 
     private Paint enemyPaint, enemyBorderPaint;
@@ -58,7 +59,8 @@ public class Enemy {
     public void drawEnemy(Canvas canvas) {
         enemyMatrix.reset();
         enemyMatrix.setTranslate(x, y);
-
+        enemyMatrix.postRotate(rotation, x + diameter / 2, y + diameter / 2);
+//        enemyMatrix.postRotate(rotation);
         canvas.drawBitmap(enemyBitmap, enemyMatrix, null);
     }
 

@@ -242,8 +242,10 @@ public class SpaceAnimationView extends FrameLayout {
 
         ArrayList<Enemy> removalArray = new ArrayList<>();
         for (Enemy enemy : enemies) {
+//            enemy.rotation = MathUtil.lerp(enemy.rotation, getHeight() * 5, 0.05f);
+//            enemy.y = MathUtil.lerp(enemy.y, 0, -.10f * enemy.rotation / 400);
             enemy.y -= enemy.speed;
-            if (enemy.y < 0.f) {
+            if (enemy.y < 0.f || enemy.x < 0.f) {
                 removalArray.add(enemy);
             }
         }
@@ -254,7 +256,7 @@ public class SpaceAnimationView extends FrameLayout {
     private void updateSmoke() {
         if (smokeTicker++ == SMOKE_INTERVAL) {
             //emit smoke
-            Smoke smoke = new Smoke(ship.getShipWidth() / 6);
+            Smoke smoke = new Smoke(ship.getShipWidth() / 4);
             float smokeDisplacement = (float) (-ship.getShipHeight() / 6 + Math.random() * ship.getShipHeight() / 2);
             smoke.y = ship.getY() + ship.getShipHeight();
             smoke.x = ship.getX() + ship.getShipWidth() / 2 - smoke.diameter + smokeDisplacement;
@@ -267,7 +269,7 @@ public class SpaceAnimationView extends FrameLayout {
             //rotate and disburse smoke
             smoke.rotation = MathUtil.lerp(smoke.rotation, 360.f, 0.05f);
             smoke.y = MathUtil.lerp(smoke.y, -ship.getShipHeight() / 2, -.01f * smoke.rotation / 400);
-            if (smoke.y >= ship.getY() + ship.getShipHeight() * 2) {
+            if (smoke.y >= ship.getY() + ship.getShipHeight() * 3) {
                 removalArray.add(smoke);
             }
         }

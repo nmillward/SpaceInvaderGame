@@ -43,7 +43,7 @@ public class Smoke {
         smokeMatrix.reset();
         smokeMatrix.setTranslate(x, y);
         smokeMatrix.postRotate(rotation, x + diameter / 2, y + diameter / 2);
-        smokePaint.setAlpha((int) (0xff * (1.f - rotation/400.f)));
+        smokePaint.setAlpha((int) (0xff * (1.f - rotation / 400.f)));
         canvas.drawBitmap(smokeBitmap, smokeMatrix, smokePaint);
     }
 }
