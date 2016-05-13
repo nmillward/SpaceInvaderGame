@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.nickmillward.hackweekspacegame.R;
 import com.nickmillward.hackweekspacegame.Util.MathUtil;
 import com.nickmillward.hackweekspacegame.entity.Enemy;
+import com.nickmillward.hackweekspacegame.entity.Explosion;
 import com.nickmillward.hackweekspacegame.entity.Ship;
 import com.nickmillward.hackweekspacegame.entity.Smoke;
 import com.nickmillward.hackweekspacegame.entity.Star;
@@ -57,7 +58,11 @@ public class SpaceAnimationView extends FrameLayout {
     private int treasureTicker;
     private ArrayList<Treasure> treasures = new ArrayList<>();
 
+    private Paint explosionPaint;
+    private ArrayList<Explosion> explosions = new ArrayList<>();
+
     private Ship ship;
+    private boolean isDead;
 
     private float lastX, lastY;
     private float minX, minY;
@@ -75,6 +80,7 @@ public class SpaceAnimationView extends FrameLayout {
     public SpaceAnimationView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        explosionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         setWillNotDraw(false);   //All ViewGroup sub-classes to call onDraw
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         addScoreView();
@@ -131,7 +137,6 @@ public class SpaceAnimationView extends FrameLayout {
             for (Star star : backgroundStars) {
                 starPaint.setColor(star.color);
                 canvas.drawCircle(star.x, star.y, star.radius, starPaint);
-
             }
 
             if (ship != null) {
@@ -148,6 +153,7 @@ public class SpaceAnimationView extends FrameLayout {
             for (Treasure treasure : treasures) {
                 treasure.drawTreasure(canvas);
             }
+            drawExplosion(canvas);
         }
     }
 
@@ -319,6 +325,41 @@ public class SpaceAnimationView extends FrameLayout {
         star.color = color;
         star.speed = -1 * speed;
         collection.add(star);
+    }
+
+    private void collideWithTreasure(Treasure treasure) {
+        if (Math.abs(treasure.x - (ship.getX())) <= treasure.diameter / 2 &&
+                Math.abs(treasure.y - (ship.getY())) <= treasure.diameter / 2) {
+            treasures.remove(treasure);
+            //TODO: Increment current score
+        }
+    }
+
+    private void collideWithEnemy(Enemy enemy) {
+        if (Math.abs(enemy.x - (ship.getX())) <= enemy.diameter / 2 &&
+                Math.abs(enemy.y - (ship.getY())) <= enemy.diameter / 2 && !isDead) {
+            addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.colorWhiteLight));
+            isDead = true;
+        }
+    }
+
+    public void addExplosion(float exlodeX, float explodeY, int color) {
+        Explosion explosion = new Explosion();
+        explosion.x = exlodeX;
+        explosion.y = explodeY;
+        explosion.color = color;
+
+        //Explosion Animation
+        explosions.add(explosion);
+
+    }
+
+    private void drawExplosion(Canvas canvas) {
+        for (Explosion explosion : explosions) {
+            explosionPaint.setColor(explosion.color);
+            explosionPaint.setAlpha(explosion.alpha);
+            canvas.drawCircle(explosion.x, explosion.y, explosion.diameter / 2, explosionPaint);
+        }
     }
 
     private void addScoreView() {

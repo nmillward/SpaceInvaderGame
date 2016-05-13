@@ -19,7 +19,7 @@ public class Enemy {
     public float speed;
     public float rotation;
     public boolean shouldDelete = false;
-    private float diameter;
+    public float diameter;
 
     private Paint enemyPaint, enemyBorderPaint;
     private Bitmap enemyBitmap;

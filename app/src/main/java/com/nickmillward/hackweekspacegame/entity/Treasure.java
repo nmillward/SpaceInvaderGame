@@ -15,7 +15,7 @@ public class Treasure {
 
     public float x, y;
     public float speed;
-    private float diameter;
+    public float diameter;
 
     private Paint treasurePaint;
     private Bitmap treasureBitmap;
