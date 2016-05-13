@@ -206,7 +206,7 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     private void updateTreasure() {
-        if (treasureTicker++ == FOREGROUND_INTERVAL * 2) {
+        if (treasureTicker++ == FOREGROUND_INTERVAL * 3) {
             treasureTicker = 0;
 
             Treasure treasure = new Treasure(ship.getShipWidth() / 2);
@@ -254,7 +254,7 @@ public class SpaceAnimationView extends FrameLayout {
     private void updateSmoke() {
         if (smokeTicker++ == SMOKE_INTERVAL) {
             //emit smoke
-            Smoke smoke = new Smoke(ship.getShipWidth() / 4);
+            Smoke smoke = new Smoke(ship.getShipWidth() / 6);
             float smokeDisplacement = (float) (-ship.getShipHeight() / 6 + Math.random() * ship.getShipHeight() / 2);
             smoke.y = ship.getY() + ship.getShipHeight();
             smoke.x = ship.getX() + ship.getShipWidth() / 2 - smoke.diameter + smokeDisplacement;

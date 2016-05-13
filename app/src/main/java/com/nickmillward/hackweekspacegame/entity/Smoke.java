@@ -33,7 +33,8 @@ public class Smoke {
     private void createSmokeBitmap() {
         smokeBitmap = Bitmap.createBitmap((int) diameter, (int) diameter, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(smokeBitmap);
-        canvas.drawColor(0x88616161); //grey
+        canvas.drawColor(0xffcccccc); //light grey
+//        canvas.drawColor(0xff616161); //grey
 //        canvas.drawColor(0x88ff0000);   //red
 //        canvas.drawColor(0x88fb7200);   //orange
     }
