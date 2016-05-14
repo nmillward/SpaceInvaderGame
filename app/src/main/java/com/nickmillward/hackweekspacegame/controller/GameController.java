@@ -33,8 +33,8 @@ public class GameController {
         this.highScore = highScore;
     }
 
-    public void incrementCurrentScore(int incrementScore) {
-        currentScore += incrementScore;
+    public void incrementCurrentScore(int pointVal) {
+        currentScore += pointVal;
     }
 
     public void resetScore() {

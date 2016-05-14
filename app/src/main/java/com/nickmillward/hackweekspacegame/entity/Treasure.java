@@ -16,6 +16,7 @@ public class Treasure {
     public float x, y;
     public float speed;
     public float diameter;
+    public boolean shouldDelete = false;
 
     private Paint treasurePaint;
     private Bitmap treasureBitmap;

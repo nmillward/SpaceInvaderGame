@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.nickmillward.hackweekspacegame.R;
 import com.nickmillward.hackweekspacegame.Util.MathUtil;
+import com.nickmillward.hackweekspacegame.controller.GameController;
 import com.nickmillward.hackweekspacegame.entity.Enemy;
 import com.nickmillward.hackweekspacegame.entity.Explosion;
 import com.nickmillward.hackweekspacegame.entity.Ship;
@@ -36,6 +37,9 @@ public class SpaceAnimationView extends FrameLayout {
     public static final int BACKGROUND_STAR_INTERVAL = 30;
     public static final int SMOKE_INTERVAL = 2;
     public static final float ROTATION_RANGE = 20.f;
+    public static final int TREASURE_POINT_VAL = 10;
+
+    private GameController controller;
 
     private TextView scoreTitleView, scoreCountView;
     protected DecimalFormat scoreFormatter = new DecimalFormat("#,###,###");
@@ -53,13 +57,16 @@ public class SpaceAnimationView extends FrameLayout {
     private ArrayList<Smoke> smokes = new ArrayList<>();
 
     private int enemyTicker;
-    private ArrayList<Enemy> enemies = new ArrayList<>();
+    private ArrayList<Enemy> enemies;
+    private ArrayList<Enemy> enemiesToDelete;
 
     private int treasureTicker;
-    private ArrayList<Treasure> treasures = new ArrayList<>();
+    private ArrayList<Treasure> treasures;
+    private ArrayList<Treasure> treasuresToDelete;
 
     private Paint explosionPaint;
-    private ArrayList<Explosion> explosions = new ArrayList<>();
+    private ArrayList<Explosion> explosions;
+    private ArrayList<Explosion> explosionsToDelete;
 
     private Ship ship;
     private boolean isDead;
@@ -81,9 +88,20 @@ public class SpaceAnimationView extends FrameLayout {
         super(context, attrs, defStyleAttr);
         starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         explosionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
         setWillNotDraw(false);   //All ViewGroup sub-classes to call onDraw
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+
         addScoreView();
+
+        enemies = new ArrayList<>();
+        enemiesToDelete = new ArrayList<>();
+
+        explosions = new ArrayList<>();
+        explosionsToDelete = new ArrayList<>();
+
+        treasures = new ArrayList<>();
+        treasuresToDelete = new ArrayList<>();
     }
 
     public void initSpaceViewTask() {
@@ -167,7 +185,7 @@ public class SpaceAnimationView extends FrameLayout {
             ship = new Ship();
             ship.createShipBitmap(width);
             ship.setX((width / 2) - (ship.getShipWidth() / 2));         //Set ship to center X
-            ship.setY(height * 3/4);                                    //Set ship towards bottom of screen
+            ship.setY(height * 3 / 4);                                    //Set ship towards bottom of screen
         }
         maxX = width - ship.getShipWidth();
         minX = 0;
@@ -239,12 +257,14 @@ public class SpaceAnimationView extends FrameLayout {
             if (treasure.y < 0.f) {
                 removalArray.add(treasure);
             }
+            collideWithTreasure(treasure);
         }
         treasures.removeAll(removalArray);
         removalArray.clear();
     }
 
     private void updateEnemy() {
+
         if (enemyTicker++ == FOREGROUND_INTERVAL) {
             enemyTicker = 0;
 
@@ -256,17 +276,39 @@ public class SpaceAnimationView extends FrameLayout {
             enemies.add(enemy);
         }
 
-        ArrayList<Enemy> removalArray = new ArrayList<>();
         for (Enemy enemy : enemies) {
-//            enemy.rotation = MathUtil.lerp(enemy.rotation, getHeight() * 5, 0.05f);
-//            enemy.y = MathUtil.lerp(enemy.y, 0, -.10f * enemy.rotation / 400);
             enemy.y -= enemy.speed;
-            if (enemy.y < 0.f || enemy.x < 0.f) {
-                removalArray.add(enemy);
+
+            if (enemy.y < 0.f && !isDead) {
+                enemy.shouldDelete = true;
             }
+            if (enemy.shouldDelete) {
+                enemiesToDelete.add(enemy);
+                continue;
+            }
+            collideWithEnemy(enemy, ship);
         }
-        enemies.removeAll(removalArray);
-        removalArray.clear();
+        if (!enemiesToDelete.isEmpty()) {
+            enemies.removeAll(enemiesToDelete);
+            enemiesToDelete.clear();
+        }
+
+//        ArrayList<Enemy> removalArray = new ArrayList<>();
+//        for (Enemy enemy : enemies) {
+////            enemy.rotation = MathUtil.lerp(enemy.rotation, getHeight() * 5, 0.05f);
+////            enemy.y = MathUtil.lerp(enemy.y, 0, -.10f * enemy.rotation / 400);
+//            enemy.y -= enemy.speed;
+//            if (enemy.y < 0.f || enemy.x < 0.f) {
+//                removalArray.add(enemy);
+//            }
+//        }
+//        enemies.removeAll(removalArray);
+//        removalArray.clear();
+    }
+
+    public void removeAllEnemies() {
+        enemies.clear();
+        enemiesToDelete.clear();
     }
 
     private void updateSmoke() {
@@ -328,14 +370,22 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     private void collideWithTreasure(Treasure treasure) {
+
+        treasure.shouldDelete = true;
+
         if (Math.abs(treasure.x - (ship.getX())) <= treasure.diameter / 2 &&
                 Math.abs(treasure.y - (ship.getY())) <= treasure.diameter / 2) {
-            treasures.remove(treasure);
-            //TODO: Increment current score
+
+            controller.incrementCurrentScore(TREASURE_POINT_VAL);
+            treasuresToDelete.add(treasure);
         }
+        //TODO: Add Treasure Collected Animation
     }
 
-    private void collideWithEnemy(Enemy enemy) {
+    private void collideWithEnemy(Enemy enemy, Ship ship) {
+
+        ship.shouldDelete = true;
+
         if (Math.abs(enemy.x - (ship.getX())) <= enemy.diameter / 2 &&
                 Math.abs(enemy.y - (ship.getY())) <= enemy.diameter / 2 && !isDead) {
             addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.colorWhiteLight));
@@ -343,9 +393,23 @@ public class SpaceAnimationView extends FrameLayout {
         }
     }
 
-    public void addExplosion(float exlodeX, float explodeY, int color) {
+    private void destroyAllEnemies() {
+
+    }
+
+    private void updateExplosion() {
+        for (Explosion explosion : explosions) {
+            if (explosion.shouldDelete) {
+                explosionsToDelete.add(explosion);
+            }
+        }
+        explosions.removeAll(explosionsToDelete);
+        explosionsToDelete.clear();
+    }
+
+    public void addExplosion(float explodeX, float explodeY, int color) {
         Explosion explosion = new Explosion();
-        explosion.x = exlodeX;
+        explosion.x = explodeX;
         explosion.y = explodeY;
         explosion.color = color;
 
@@ -363,7 +427,7 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     private void addScoreView() {
-//        String formattedScore = scoreFormatter.format(score);
+//        String formattedScore = scoreFormatter.format("100");
 
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
@@ -373,6 +437,7 @@ public class SpaceAnimationView extends FrameLayout {
         scoreTitleView.setLayoutParams(layoutParams);
         scoreTitleView.setText(getResources().getString(R.string.score));
 //        scoreTitleView.setText(String.format(getResources().getString(R.string.score), formattedScore));
+//        scoreTitleView.setText(String.format(getResources().getString(R.string.score), controller.getCurrentScore()));
         scoreTitleView.setTextColor(getResources().getColor(R.color.colorWhiteLight));
         scoreTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         addView(scoreTitleView);

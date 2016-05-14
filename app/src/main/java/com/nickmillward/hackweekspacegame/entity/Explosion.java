@@ -9,6 +9,7 @@ public class Explosion {
     public float x, y;
     public int color;
     public int alpha;
+    public boolean shouldDelete;
 
 //    private Bitmap explosionBitmap;
 //    private Matrix explosionMatrix = new Matrix();

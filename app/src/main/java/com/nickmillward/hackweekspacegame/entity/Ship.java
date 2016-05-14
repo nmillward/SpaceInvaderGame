@@ -19,6 +19,8 @@ public class Ship {
     private float lastX, lastY;
     private float rotation;
 
+    public boolean shouldDelete;
+
     private int shipHeight, shipWidth;
     private Paint shipPaint;
     private Bitmap shipBitmap;
@@ -41,7 +43,7 @@ public class Ship {
     }
 
     public void createShipBitmap(int screenWidth) {     //Use device screen size to determine ship size
-        shipHeight = screenWidth / 8;
+        shipHeight = screenWidth / 10;
         shipWidth = shipHeight * 3/4;
 
         int shipBottomCorner = shipHeight / 6;
