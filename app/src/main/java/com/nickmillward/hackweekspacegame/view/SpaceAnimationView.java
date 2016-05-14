@@ -5,13 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.nickmillward.hackweekspacegame.R;
 import com.nickmillward.hackweekspacegame.Util.MathUtil;
@@ -42,13 +38,14 @@ public class SpaceAnimationView extends FrameLayout {
 
     private GameController controller;
 
-    private TextView scoreTitleView, scoreCountView;
     protected DecimalFormat scoreFormatter = new DecimalFormat("#,###,###");
 
     private TimerTask spaceViewTask;
     private Timer spaceViewTimer;
 
     private static final Object spaceViewLock = new Object();
+
+    private Paint scorePaint;
 
     private Paint starPaint;
     private int backgroundStarTicker;
@@ -90,13 +87,17 @@ public class SpaceAnimationView extends FrameLayout {
         starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         explosionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+        scorePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        scorePaint.setStyle(Paint.Style.STROKE);
+        scorePaint.setTextSize(getResources().getDimension(R.dimen.font_size_score));
+        scorePaint.setTextAlign(Paint.Align.CENTER);
+        scorePaint.setColor(getResources().getColor(R.color.colorWhiteLight));
+
 //        controller = (GameController) SpaceGameApplication.getController(Controller.GAME_CONTROLLER);
         controller = new GameController();
 
         setWillNotDraw(false);   //All ViewGroup sub-classes to call onDraw
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-
-        addScoreView();
 
         enemies = new ArrayList<>();
         enemiesToDelete = new ArrayList<>();
@@ -176,6 +177,7 @@ public class SpaceAnimationView extends FrameLayout {
                 treasure.drawTreasure(canvas);
             }
             drawExplosion(canvas);
+            drawScore(canvas);
         }
     }
 
@@ -294,7 +296,6 @@ public class SpaceAnimationView extends FrameLayout {
             collideWithEnemy(enemy, ship);
             if (enemy.shouldDelete) {
                 enemiesToDelete.add(enemy);
-                continue;
             }
         }
         if (!enemiesToDelete.isEmpty()) {
@@ -425,26 +426,9 @@ public class SpaceAnimationView extends FrameLayout {
         }
     }
 
-    private void updateScoreView() {
-        scoreTitleView.setText(String.format(getResources().getString(R.string.score), controller.getCurrentScore()));
-    }
-
-    private void addScoreView() {
-//        String formattedScore = scoreFormatter.format("100");
-
-        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-        layoutParams.setMargins(16, 16, 16, 16);
-
-        scoreTitleView = new TextView(getContext());
-        scoreTitleView.setLayoutParams(layoutParams);
-//        scoreTitleView.setText(getResources().getString(R.string.score));
-//        scoreTitleView.setText(String.format(getResources().getString(R.string.score), formattedScore));
-        scoreTitleView.setText(String.format(getResources().getString(R.string.score), controller.getCurrentScore()));
-        scoreTitleView.setTextColor(getResources().getColor(R.color.colorWhiteLight));
-        scoreTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-        addView(scoreTitleView);
-
+    private void drawScore(Canvas canvas) {
+        canvas.drawText("Score ", getWidth() / 2, getHeight() / 32, scorePaint);
+        canvas.drawText(String.format("%s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 32, scorePaint);
     }
 
 }
