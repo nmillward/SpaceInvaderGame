@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -88,6 +89,9 @@ public class SpaceAnimationView extends FrameLayout {
         super(context, attrs, defStyleAttr);
         starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         explosionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+//        controller = (GameController) SpaceGameApplication.getController(Controller.GAME_CONTROLLER);
+        controller = new GameController();
 
         setWillNotDraw(false);   //All ViewGroup sub-classes to call onDraw
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -251,16 +255,21 @@ public class SpaceAnimationView extends FrameLayout {
             treasures.add(treasure);
         }
 
-        ArrayList<Treasure> removalArray = new ArrayList<>();
         for (Treasure treasure : treasures) {
             treasure.y -= treasure.speed;
             if (treasure.y < 0.f) {
-                removalArray.add(treasure);
+                treasure.shouldDelete = true;
+            }
+            if (treasure.shouldDelete) {
+                treasuresToDelete.add(treasure);
+                continue;
             }
             collideWithTreasure(treasure);
         }
-        treasures.removeAll(removalArray);
-        removalArray.clear();
+        if (!treasuresToDelete.isEmpty()) {
+            treasures.removeAll(treasuresToDelete);
+            treasuresToDelete.clear();
+        }
     }
 
     private void updateEnemy() {
@@ -282,28 +291,16 @@ public class SpaceAnimationView extends FrameLayout {
             if (enemy.y < 0.f && !isDead) {
                 enemy.shouldDelete = true;
             }
+            collideWithEnemy(enemy, ship);
             if (enemy.shouldDelete) {
                 enemiesToDelete.add(enemy);
                 continue;
             }
-            collideWithEnemy(enemy, ship);
         }
         if (!enemiesToDelete.isEmpty()) {
             enemies.removeAll(enemiesToDelete);
             enemiesToDelete.clear();
         }
-
-//        ArrayList<Enemy> removalArray = new ArrayList<>();
-//        for (Enemy enemy : enemies) {
-////            enemy.rotation = MathUtil.lerp(enemy.rotation, getHeight() * 5, 0.05f);
-////            enemy.y = MathUtil.lerp(enemy.y, 0, -.10f * enemy.rotation / 400);
-//            enemy.y -= enemy.speed;
-//            if (enemy.y < 0.f || enemy.x < 0.f) {
-//                removalArray.add(enemy);
-//            }
-//        }
-//        enemies.removeAll(removalArray);
-//        removalArray.clear();
     }
 
     public void removeAllEnemies() {
@@ -371,13 +368,15 @@ public class SpaceAnimationView extends FrameLayout {
 
     private void collideWithTreasure(Treasure treasure) {
 
-        treasure.shouldDelete = true;
-
         if (Math.abs(treasure.x - (ship.getX())) <= treasure.diameter / 2 &&
                 Math.abs(treasure.y - (ship.getY())) <= treasure.diameter / 2) {
 
+            Log.d("TREASURE", "SCORE COUNT BEFORE = " + controller.getCurrentScore());
+
             controller.incrementCurrentScore(TREASURE_POINT_VAL);
+
             treasuresToDelete.add(treasure);
+            Log.d("TREASURE", "SCORE COUNT AFTER = " + controller.getCurrentScore());
         }
         //TODO: Add Treasure Collected Animation
     }
@@ -426,6 +425,10 @@ public class SpaceAnimationView extends FrameLayout {
         }
     }
 
+    private void updateScoreView() {
+        scoreTitleView.setText(String.format(getResources().getString(R.string.score), controller.getCurrentScore()));
+    }
+
     private void addScoreView() {
 //        String formattedScore = scoreFormatter.format("100");
 
@@ -435,9 +438,9 @@ public class SpaceAnimationView extends FrameLayout {
 
         scoreTitleView = new TextView(getContext());
         scoreTitleView.setLayoutParams(layoutParams);
-        scoreTitleView.setText(getResources().getString(R.string.score));
+//        scoreTitleView.setText(getResources().getString(R.string.score));
 //        scoreTitleView.setText(String.format(getResources().getString(R.string.score), formattedScore));
-//        scoreTitleView.setText(String.format(getResources().getString(R.string.score), controller.getCurrentScore()));
+        scoreTitleView.setText(String.format(getResources().getString(R.string.score), controller.getCurrentScore()));
         scoreTitleView.setTextColor(getResources().getColor(R.color.colorWhiteLight));
         scoreTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         addView(scoreTitleView);

@@ -3,12 +3,15 @@ package com.nickmillward.hackweekspacegame.controller;
 /**
  * Created by nmillward on 5/13/16.
  */
-public class GameController {
+public class GameController extends Controller {
 
     public int currentScore;
-    public int highScore;
+    public int highScore = 0;
     public boolean isPlayerAlive;
 
+    public GameController() {
+
+    }
 
     public void resetGame() {
         if (currentScore > highScore) {
