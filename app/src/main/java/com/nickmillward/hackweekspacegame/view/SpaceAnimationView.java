@@ -3,6 +3,7 @@ package com.nickmillward.hackweekspacegame.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -46,7 +47,6 @@ public class SpaceAnimationView extends FrameLayout {
     private static final Object spaceViewLock = new Object();
 
     private Paint scorePaint;
-
     private Paint starPaint;
     private int backgroundStarTicker;
     private ArrayList<Star> backgroundStars = new ArrayList<>();
@@ -68,6 +68,8 @@ public class SpaceAnimationView extends FrameLayout {
 
     private Ship ship;
     private boolean isDead;
+
+    private RectF shipRect = new RectF();
 
     private float lastX, lastY;
     private float minX, minY;
@@ -120,6 +122,7 @@ public class SpaceAnimationView extends FrameLayout {
                         updateSmoke();
                         updateEnemy();
                         updateTreasure();
+                        updateExplosion();
                     }
                 }
                 postInvalidate();
@@ -369,15 +372,11 @@ public class SpaceAnimationView extends FrameLayout {
 
     private void collideWithTreasure(Treasure treasure) {
 
-        if (Math.abs(treasure.x - (ship.getX())) <= treasure.diameter / 2 &&
-                Math.abs(treasure.y - (ship.getY())) <= treasure.diameter / 2) {
-
-            Log.d("TREASURE", "SCORE COUNT BEFORE = " + controller.getCurrentScore());
+        if (Math.abs(treasure.x - (ship.getX())) <= treasure.diameter &&
+                Math.abs(treasure.y - (ship.getY())) <= treasure.diameter) {
 
             controller.incrementCurrentScore(TREASURE_POINT_VAL);
-
             treasuresToDelete.add(treasure);
-            Log.d("TREASURE", "SCORE COUNT AFTER = " + controller.getCurrentScore());
         }
         //TODO: Add Treasure Collected Animation
     }
@@ -386,8 +385,8 @@ public class SpaceAnimationView extends FrameLayout {
 
         ship.shouldDelete = true;
 
-        if (Math.abs(enemy.x - (ship.getX())) <= enemy.diameter / 2 &&
-                Math.abs(enemy.y - (ship.getY())) <= enemy.diameter / 2 && !isDead) {
+        if (Math.abs(enemy.x - (ship.getX())) <= enemy.diameter &&
+                Math.abs(enemy.y - (ship.getY())) <= enemy.diameter && !isDead) {
             addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.colorWhiteLight));
             isDead = true;
         }
@@ -414,7 +413,9 @@ public class SpaceAnimationView extends FrameLayout {
         explosion.color = color;
 
         //Explosion Animation
+
         explosions.add(explosion);
+        Log.d("EXPLODE", "Ship has exploded.");
 
     }
 
