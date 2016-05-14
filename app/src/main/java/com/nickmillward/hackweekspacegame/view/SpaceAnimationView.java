@@ -389,6 +389,8 @@ public class SpaceAnimationView extends FrameLayout {
                 Math.abs(enemy.y - (ship.getY())) <= enemy.diameter && !isDead) {
             addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.colorWhiteLight));
             isDead = true;
+
+            //End Game
         }
     }
 
