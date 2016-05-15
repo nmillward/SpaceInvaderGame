@@ -306,7 +306,7 @@ public class SpaceAnimationView extends FrameLayout {
         }
 
         for (Enemy enemy : enemies) {
-            enemy.y -= enemy.speed;
+            enemy.y -= enemy.speed * 1.5;
 
             if (enemy.y < 0.f && !isDead) {
                 enemy.shouldDelete = true;
