@@ -35,7 +35,7 @@ import java.util.TimerTask;
 public class SpaceAnimationView extends FrameLayout {
 
     public static final int FOREGROUND_INTERVAL = 20;
-    public static final int BACKGROUND_STAR_INTERVAL = 30;
+    public static final int BACKGROUND_STAR_INTERVAL = 5;
     public static final int SMOKE_INTERVAL = 2;
     public static final float ROTATION_RANGE = 20.f;
     public static final int TREASURE_POINT_VAL = 10;
@@ -378,8 +378,8 @@ public class SpaceAnimationView extends FrameLayout {
         if (backgroundStarTicker++ == BACKGROUND_STAR_INTERVAL) {
             backgroundStarTicker = 0;
             emitStar(
-                    (int) (getWidth() / 128 + (getWidth() / 256) * Math.random()),
-                    0x66ffffff,
+                    (int) (getWidth() / 256 + (getWidth() / 256) * Math.random()),
+                    0x40ffffff,
                     getWidth() / 256,
                     backgroundStars);
         }
@@ -455,7 +455,7 @@ public class SpaceAnimationView extends FrameLayout {
 
         //Explosion Animation
         final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.setDuration(1000);
+        anim.setDuration(600);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
