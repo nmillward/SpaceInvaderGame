@@ -1,5 +1,7 @@
 package com.nickmillward.hackweekspacegame.view;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -207,8 +209,6 @@ public class SpaceAnimationView extends FrameLayout {
             ship.createShipBitmap(width);
             ship.setX((width / 2) - (ship.getShipWidth() / 2));         //Set ship to center X
             ship.setY(height * 3 / 4);                                    //Set ship towards bottom of screen
-
-//            enemy = new Enemy(ship.getShipWidth() / 2);
         }
         maxX = width - ship.getShipWidth();
         minX = 0;
@@ -415,6 +415,7 @@ public class SpaceAnimationView extends FrameLayout {
 
             controller.incrementCurrentScore(TREASURE_POINT_VAL);
             treasuresToDelete.add(treasure);
+            addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.colorWhiteLight));
         }
         //TODO: Add Treasure Collected Animation
     }
@@ -447,15 +448,55 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     public void addExplosion(float explodeX, float explodeY, int color) {
-        Explosion explosion = new Explosion();
+        final Explosion explosion = new Explosion();
         explosion.x = explodeX;
         explosion.y = explodeY;
         explosion.color = color;
 
         //Explosion Animation
+        final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
+        anim.setDuration(1000);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                explosion.radius = (int) (getHeight() / 2 * valueAnimator.getAnimatedFraction());
+                explosion.alpha = (int) (255 * (1 - valueAnimator.getAnimatedFraction()));
+            }
+        });
+
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                explosion.radius = 0;
+                explosion.alpha = 0;
+                explosion.shouldDelete = true;
+                Log.d("EXPLODE", "Animation End");
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        });
 
         explosions.add(explosion);
         Log.d("EXPLODE", "Ship has exploded.");
+        post(new Runnable() {
+            @Override
+            public void run() {
+                anim.start();
+            }
+        });
 
     }
 
@@ -463,7 +504,7 @@ public class SpaceAnimationView extends FrameLayout {
         for (Explosion explosion : explosions) {
             explosionPaint.setColor(explosion.color);
             explosionPaint.setAlpha(explosion.alpha);
-            canvas.drawCircle(explosion.x, explosion.y, explosion.diameter / 2, explosionPaint);
+            canvas.drawCircle(explosion.x, explosion.y, explosion.radius / 2, explosionPaint);
         }
     }
 
