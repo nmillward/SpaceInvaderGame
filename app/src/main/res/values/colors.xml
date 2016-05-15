@@ -8,5 +8,6 @@
     <color name="colorWhiteLight">#E6FFFFFF</color>
 
     <color name="shipColor">#FF9BFAD0</color>
+    <color name="treasureColor">#FFFFD700</color>
 
 </resources>

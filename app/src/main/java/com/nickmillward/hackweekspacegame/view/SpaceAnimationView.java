@@ -415,7 +415,7 @@ public class SpaceAnimationView extends FrameLayout {
 
             controller.incrementCurrentScore(TREASURE_POINT_VAL);
             treasuresToDelete.add(treasure);
-            addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.colorWhiteLight));
+            addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.treasureColor));
         }
         //TODO: Add Treasure Collected Animation
     }
