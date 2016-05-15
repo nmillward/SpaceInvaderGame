@@ -22,7 +22,7 @@ public class Ship {
     public boolean shouldDelete;
 
     private int shipHeight, shipWidth;
-    private Paint shipPaint;
+    private Paint shipPaint, shipFlamePaint;
     private Bitmap shipBitmap;
     private Matrix shipMatrix;
     private Direction driftDirection;
@@ -38,12 +38,16 @@ public class Ship {
         shipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 //        shipPaint.setColor(ContextCompat.getColor(context, R.color.shipColor));
         shipPaint.setColor(0xff9bfad0);
+
+        shipFlamePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        shipFlamePaint.setColor(0xffE26660);
+
         shipMatrix = new Matrix();
         driftDirection = Direction.OUTWARD;
     }
 
     public void createShipBitmap(int screenWidth) {     //Use device screen size to determine ship size
-        shipHeight = screenWidth / 10;
+        shipHeight = screenWidth / 8;
         shipWidth = shipHeight * 3/4;
 
         int shipBottomCorner = shipHeight / 6;
@@ -56,9 +60,18 @@ public class Ship {
         shipPath.lineTo(shipBottomCorner, shipHeight);                  //Bottom Left
         shipPath.close();
 
+        Path flamePath = new Path();
+        flamePath.moveTo(shipWidth / 2, shipHeight + shipBottomCorner / 2);                    //Bottom Center
+        flamePath.lineTo(shipWidth / 2 - shipBottomCorner / 2, shipHeight + shipBottomCorner / 2);
+        flamePath.lineTo(shipWidth / 2 - shipBottomCorner / 2, shipHeight - shipBottomCorner / 2);
+        flamePath.lineTo(shipWidth / 2 + shipBottomCorner / 2, shipHeight - shipBottomCorner / 2);
+        flamePath.lineTo(shipWidth / 2 + shipBottomCorner / 2, shipHeight + shipBottomCorner / 2);
+        flamePath.close();
+
         shipBitmap = Bitmap.createBitmap(shipWidth, shipHeight, Bitmap.Config.ARGB_8888);
         Canvas shipCanvas = new Canvas(shipBitmap);
         shipCanvas.drawPath(shipPath, shipPaint);
+//        shipCanvas.drawPath(flamePath, shipFlamePaint);
 
         driftRange = shipWidth / 3;
     }

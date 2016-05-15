@@ -245,9 +245,9 @@ public class SpaceAnimationView extends FrameLayout {
                         ship.setX(Math.min(maxX, Math.max(minX, MathUtil.lerp(ship.getX(), ship.getX() + deltaX, 1.0f))));  //1.0f = 100% to follow finger movement
                         ship.setY(Math.min(maxY, Math.max(minY, MathUtil.lerp(ship.getY(), ship.getY() + deltaY, 1.0f))));
                         if (deltaX > 0) {
-                            ship.setRotation(MathUtil.lerp(ship.getRotation(), ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.3f));
+                            ship.setRotation(MathUtil.lerp(ship.getRotation(), ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.5f));
                         } else if (deltaX < 0) {
-                            ship.setRotation(MathUtil.lerp(ship.getRotation(), -ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.3f));
+                            ship.setRotation(MathUtil.lerp(ship.getRotation(), -ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.5f));
                         }
 //                        else if (deltaY > 0) {
 //                            //TODO: Tilt ship forward
@@ -269,7 +269,7 @@ public class SpaceAnimationView extends FrameLayout {
             Treasure treasure = new Treasure(ship.getShipWidth() / 2);
             treasure.x = (float) Math.random() * getWidth();
             treasure.y = 0;
-            treasure.speed = (getWidth() / 128) * -1;
+            treasure.speed = (getWidth() / 156) * -1;
 
             treasures.add(treasure);
         }
@@ -296,11 +296,10 @@ public class SpaceAnimationView extends FrameLayout {
         if (enemyTicker++ == FOREGROUND_INTERVAL) {
             enemyTicker = 0;
 
-            float diameter = ship.getShipWidth() / 2;
-            Enemy enemy = new Enemy(diameter);
-            enemy.setDiameter(diameter);
-            enemy.setX(enemy.x = (float) (Math.random() * getWidth()));
-            enemy.setY(enemy.y = 0);
+//            float diameter = (float) (ship.getShipWidth() * 1/2 + (Math.random() * (ship.getShipWidth() * 1/2)));
+            Enemy enemy = new Enemy(ship.getShipWidth() * 1/2);
+            enemy.x = (float) (Math.random() * getWidth());
+            enemy.y = 0;
             enemy.speed = (getWidth() / 128) * -1;
 
             enemies.add(enemy);
@@ -455,7 +454,7 @@ public class SpaceAnimationView extends FrameLayout {
 
         //Explosion Animation
         final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.setDuration(600);
+        anim.setDuration(800);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
