@@ -223,6 +223,7 @@ public class SpaceAnimationView extends FrameLayout {
                 //Display Current Score
                 //Display High Score
                 //Display button to restart game
+                drawEndGameResults(canvas);
             }
 
             drawExplosion(canvas);
@@ -571,4 +572,13 @@ public class SpaceAnimationView extends FrameLayout {
         canvas.drawText(String.format("%s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 18, scorePaint);
     }
 
+    private void drawEndGameResults(Canvas canvas) {
+        if (controller.getCurrentScore() < controller.getHighScore()) {     //Did not set new high score
+            canvas.drawText(String.format("SCORE: %s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, getHeight() / 2, scorePaint);
+            canvas.drawText(String.format("HIGH SCORE: %s", scoreFormatter.format(controller.getHighScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 2, scorePaint);
+        } else {    //Set new high score
+            canvas.drawText("NEW HIGH SCORE!", getWidth() / 2, getHeight() / 2, scorePaint);
+            canvas.drawText(String.format("SCORE: %s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 2, scorePaint);
+        }
+    }
 }
