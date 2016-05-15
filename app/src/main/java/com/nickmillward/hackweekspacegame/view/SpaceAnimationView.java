@@ -125,16 +125,32 @@ public class SpaceAnimationView extends FrameLayout {
             @Override
             public void run() {
                 synchronized (spaceViewLock) {
-                    if (ship != null) {
-                        ship.onFrame();
-                        updateStar();
-                        updateSmoke();
-                        updateEnemy();
+
+//                    switch (controller.getGameState()) {
+//
+//                        case GameController.HOME:
+//                            //Show Home Panel
+//                            break;
+//
+//                        case GameController.END:
+//                            //Show Game Score vs High Score Panel
+//                            break;
+//
+//                        case GameController.PLAY:
+                            if (ship != null) {
+                                ship.onFrame();
+                                updateStar();
+                                updateSmoke();
+                                updateEnemy();
 //                        updateEnemySmoke();
-                        updateTreasure();
-                        updateExplosion();
-                    }
+                                updateTreasure();
+                                updateExplosion();
+                            }
+//                            break;
+//                    }
+
                 }
+//                updateStar();
                 postInvalidate();
             }
         };
@@ -175,15 +191,19 @@ public class SpaceAnimationView extends FrameLayout {
                 canvas.drawCircle(star.x, star.y, star.radius, starPaint);
             }
 
-            if (ship != null) {
-                for (Smoke smoke : smokes) {
-                    smoke.drawSmoke(canvas);
+            if (!isDead) {
+                if (ship != null) {
+                    for (Smoke smoke : smokes) {
+                        smoke.drawSmoke(canvas);
+                    }
+                    ship.drawShip(canvas);
                 }
-                ship.drawShip(canvas);
-            }
-
-            for (Enemy enemy : enemies) {
-                enemy.drawEnemy(canvas);
+                for (Enemy enemy : enemies) {
+                    enemy.drawEnemy(canvas);
+                }
+                for (Treasure treasure : treasures) {
+                    treasure.drawTreasure(canvas);
+                }
             }
 
             if (enemy != null) {
@@ -192,9 +212,6 @@ public class SpaceAnimationView extends FrameLayout {
                 }
             }
 
-            for (Treasure treasure : treasures) {
-                treasure.drawTreasure(canvas);
-            }
             drawExplosion(canvas);
             drawScore(canvas);
         }
@@ -243,7 +260,7 @@ public class SpaceAnimationView extends FrameLayout {
                     lastX = event.getX();
                     lastY = event.getY();
 
-                    if (ship != null) {
+                    if (ship != null & !isDead) {
                         ship.setX(Math.min(maxX, Math.max(minX, MathUtil.lerp(ship.getX(), ship.getX() + deltaX, 1.0f))));  //1.0f = 100% to follow finger movement
                         ship.setY(Math.min(maxY, Math.max(minY, MathUtil.lerp(ship.getY(), ship.getY() + deltaY, 1.0f))));
                         if (deltaX > 0) {
@@ -412,7 +429,7 @@ public class SpaceAnimationView extends FrameLayout {
     private void collideWithTreasure(Treasure treasure) {
 
         if (Math.abs(treasure.x - (ship.getX())) <= treasure.diameter &&
-                Math.abs(treasure.y - (ship.getY())) <= treasure.diameter) {
+                Math.abs(treasure.y - (ship.getY())) <= treasure.diameter && !isDead) {
 
             controller.incrementCurrentScore(TREASURE_POINT_VAL);
             treasuresToDelete.add(treasure);
@@ -473,6 +490,7 @@ public class SpaceAnimationView extends FrameLayout {
         explosion.x = explodeX;
         explosion.y = explodeY;
         explosion.color = color;
+
 
         //Explosion Animation
         final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);

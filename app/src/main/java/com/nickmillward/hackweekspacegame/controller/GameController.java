@@ -5,6 +5,12 @@ package com.nickmillward.hackweekspacegame.controller;
  */
 public class GameController extends Controller {
 
+    public static final int HOME = 0;
+    public static final int PLAY = 1;
+    public static final int END = 2;
+
+    private int gameState;
+
     public int currentScore;
     public int highScore = 0;
     public boolean isPlayerAlive;
@@ -18,6 +24,8 @@ public class GameController extends Controller {
             highScore = currentScore;
         }
         resetScore();
+//        setGameState(HOME);
+        setGameState(PLAY);
     }
 
     public int getCurrentScore() {
@@ -50,5 +58,13 @@ public class GameController extends Controller {
 
     public void setPlayerAlive(boolean playerAlive) {
         isPlayerAlive = playerAlive;
+    }
+
+    public int getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(int gameState) {
+        this.gameState = gameState;
     }
 }
