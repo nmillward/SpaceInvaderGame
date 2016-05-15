@@ -28,7 +28,8 @@ public class Treasure {
         treasurePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 //        treasurePaint.setStyle(Paint.Style.STROKE);
 //        treasurePaint.setStrokeWidth(diameter / 10);
-        treasurePaint.setColor(0xffffd700);
+        treasurePaint.setColor(0xFF72FF66);     //Lime Green
+//        treasurePaint.setColor(0xffffd700);     //Gold
 
         if (treasureBitmap == null) {
             createTreasureBitmap();

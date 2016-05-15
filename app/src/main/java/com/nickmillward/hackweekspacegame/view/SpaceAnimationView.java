@@ -328,7 +328,7 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     private void updateEnemySmoke() {
-        if (enemySmokeTicker++ == SMOKE_INTERVAL / 2) {
+        if (enemySmokeTicker++ == FOREGROUND_INTERVAL) {
             EnemySmoke smoke = new EnemySmoke(enemy.getDiameter());
             smoke.x = enemy.x;
             smoke.y = enemy.y;

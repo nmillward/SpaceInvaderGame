@@ -37,9 +37,11 @@ public class Ship {
     public Ship() {
         shipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 //        shipPaint.setColor(ContextCompat.getColor(context, R.color.shipColor));
-        shipPaint.setColor(0xff9bfad0);
+        shipPaint.setColor(0xFF7FD8FF);     //Light Blue
+//        shipPaint.setColor(0xff9bfad0);   //Mint Green
 
         shipFlamePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        shipFlamePaint.setColor(0xFFFF6060);    //Light Red
         shipFlamePaint.setColor(0xffE26660);
 
         shipMatrix = new Matrix();
@@ -71,7 +73,7 @@ public class Ship {
         shipBitmap = Bitmap.createBitmap(shipWidth, shipHeight, Bitmap.Config.ARGB_8888);
         Canvas shipCanvas = new Canvas(shipBitmap);
         shipCanvas.drawPath(shipPath, shipPaint);
-//        shipCanvas.drawPath(flamePath, shipFlamePaint);
+        shipCanvas.drawPath(flamePath, shipFlamePaint);
 
         driftRange = shipWidth / 3;
     }
