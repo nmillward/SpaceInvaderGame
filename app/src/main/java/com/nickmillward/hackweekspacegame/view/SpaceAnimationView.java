@@ -98,6 +98,7 @@ public class SpaceAnimationView extends FrameLayout {
 
         scorePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         scorePaint.setStyle(Paint.Style.STROKE);
+        scorePaint.setStrokeWidth(4);
         scorePaint.setTextSize(getResources().getDimension(R.dimen.font_size_score));
         scorePaint.setTextAlign(Paint.Align.CENTER);
         scorePaint.setColor(getResources().getColor(R.color.colorWhiteLight));
@@ -528,8 +529,8 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     private void drawScore(Canvas canvas) {
-        canvas.drawText("Score ", getWidth() / 2, getHeight() / 32, scorePaint);
-        canvas.drawText(String.format("%s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 32, scorePaint);
+        canvas.drawText("SCORE ", getWidth() / 2, getHeight() / 18, scorePaint);
+        canvas.drawText(String.format("%s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 18, scorePaint);
     }
 
 }
