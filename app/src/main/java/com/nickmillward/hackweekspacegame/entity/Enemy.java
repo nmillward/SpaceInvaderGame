@@ -25,6 +25,10 @@ public class Enemy {
     private Bitmap enemyBitmap;
     private Matrix enemyMatrix = new Matrix();
 
+    public Enemy() {
+
+    }
+
     public Enemy(float diameter) {
         this.diameter = diameter;
 
@@ -34,7 +38,8 @@ public class Enemy {
         enemyPaint.setColor(0xff323299);
 
         enemyBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        enemyBorderPaint.setColor(0xffE26660);
+        enemyBorderPaint.setColor(0xE6FFFFFF);
+//        enemyBorderPaint.setColor(0xffE26660);
 
         if (enemyBitmap == null) {
             createEnemyBitmap();
@@ -65,5 +70,27 @@ public class Enemy {
         canvas.drawBitmap(enemyBitmap, enemyMatrix, null);
     }
 
+    public float getDiameter() {
+        return diameter;
+    }
 
+    public void setDiameter(float diameter) {
+        this.diameter = diameter;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
 }

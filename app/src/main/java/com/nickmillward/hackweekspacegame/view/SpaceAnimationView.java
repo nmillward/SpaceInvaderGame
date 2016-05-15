@@ -14,6 +14,7 @@ import com.nickmillward.hackweekspacegame.R;
 import com.nickmillward.hackweekspacegame.Util.MathUtil;
 import com.nickmillward.hackweekspacegame.controller.GameController;
 import com.nickmillward.hackweekspacegame.entity.Enemy;
+import com.nickmillward.hackweekspacegame.entity.EnemySmoke;
 import com.nickmillward.hackweekspacegame.entity.Explosion;
 import com.nickmillward.hackweekspacegame.entity.Ship;
 import com.nickmillward.hackweekspacegame.entity.Smoke;
@@ -54,6 +55,10 @@ public class SpaceAnimationView extends FrameLayout {
     private int smokeTicker;
     private ArrayList<Smoke> smokes = new ArrayList<>();
 
+    private int enemySmokeTicker;
+    private ArrayList<EnemySmoke> enemySmokes = new ArrayList<>();
+
+    private Enemy enemy;
     private int enemyTicker;
     private ArrayList<Enemy> enemies;
     private ArrayList<Enemy> enemiesToDelete;
@@ -121,6 +126,7 @@ public class SpaceAnimationView extends FrameLayout {
                         updateStar();
                         updateSmoke();
                         updateEnemy();
+//                        updateEnemySmoke();
                         updateTreasure();
                         updateExplosion();
                     }
@@ -176,6 +182,12 @@ public class SpaceAnimationView extends FrameLayout {
                 enemy.drawEnemy(canvas);
             }
 
+            if (enemy != null) {
+                for (EnemySmoke enemySmoke : enemySmokes) {
+                    enemySmoke.drawSmoke(canvas);
+                }
+            }
+
             for (Treasure treasure : treasures) {
                 treasure.drawTreasure(canvas);
             }
@@ -195,6 +207,8 @@ public class SpaceAnimationView extends FrameLayout {
             ship.createShipBitmap(width);
             ship.setX((width / 2) - (ship.getShipWidth() / 2));         //Set ship to center X
             ship.setY(height * 3 / 4);                                    //Set ship towards bottom of screen
+
+//            enemy = new Enemy(ship.getShipWidth() / 2);
         }
         maxX = width - ship.getShipWidth();
         minX = 0;
@@ -282,9 +296,11 @@ public class SpaceAnimationView extends FrameLayout {
         if (enemyTicker++ == FOREGROUND_INTERVAL) {
             enemyTicker = 0;
 
-            Enemy enemy = new Enemy(ship.getShipWidth() / 2);
-            enemy.x = (float) (Math.random() * getWidth());
-            enemy.y = 0;
+            float diameter = ship.getShipWidth() / 2;
+            Enemy enemy = new Enemy(diameter);
+            enemy.setDiameter(diameter);
+            enemy.setX(enemy.x = (float) (Math.random() * getWidth()));
+            enemy.setY(enemy.y = 0);
             enemy.speed = (getWidth() / 128) * -1;
 
             enemies.add(enemy);
@@ -310,6 +326,28 @@ public class SpaceAnimationView extends FrameLayout {
     public void removeAllEnemies() {
         enemies.clear();
         enemiesToDelete.clear();
+    }
+
+    private void updateEnemySmoke() {
+        if (enemySmokeTicker++ == SMOKE_INTERVAL / 2) {
+            EnemySmoke smoke = new EnemySmoke(enemy.getDiameter());
+            smoke.x = enemy.x;
+            smoke.y = enemy.y;
+            Log.d("========== ENEMY SMOKE", String.valueOf(smoke.y) + ", " + String.valueOf(smoke.x));
+            enemySmokes.add(smoke);
+            enemySmokeTicker = 0;
+        }
+
+        ArrayList<EnemySmoke> removalArray = new ArrayList<>();
+        for (EnemySmoke enemySmoke : enemySmokes) {
+            enemySmoke.y = MathUtil.lerp(enemySmoke.y, -ship.getShipHeight() / 2, -.01f * enemySmoke.rotation / 400);
+            if (enemySmoke.y <= enemy.y - ship.getShipHeight() * 3) {
+                removalArray.add(enemySmoke);
+                Log.d("ENEMY SMOKE", "GOT HERE 2");
+            }
+        }
+        enemySmokes.removeAll(removalArray);
+        removalArray.clear();
     }
 
     private void updateSmoke() {
