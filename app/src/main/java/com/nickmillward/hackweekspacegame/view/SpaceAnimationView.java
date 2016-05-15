@@ -306,6 +306,8 @@ public class SpaceAnimationView extends FrameLayout {
 
     private void updateRestartGame() {
 
+        removeAllEnemiesAndTreasures();
+
         postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -382,9 +384,12 @@ public class SpaceAnimationView extends FrameLayout {
         }
     }
 
-    public void removeAllEnemies() {
+    public void removeAllEnemiesAndTreasures() {
         enemies.clear();
         enemiesToDelete.clear();
+
+        treasures.clear();
+        treasuresToDelete.clear();
     }
 
     private void updateEnemySmoke() {
