@@ -296,8 +296,8 @@ public class SpaceAnimationView extends FrameLayout {
         if (enemyTicker++ == FOREGROUND_INTERVAL) {
             enemyTicker = 0;
 
-//            float diameter = (float) (ship.getShipWidth() * 1/2 + (Math.random() * (ship.getShipWidth() * 1/2)));
-            Enemy enemy = new Enemy(ship.getShipWidth() * 1/2);
+            float diameter = (float) (ship.getShipWidth() * 1/2 + (Math.random() * (ship.getShipWidth() * 1/2)));
+            Enemy enemy = new Enemy(diameter);
             enemy.x = (float) (Math.random() * getWidth());
             enemy.y = 0;
             enemy.speed = (getWidth() / 128) * -1;
