@@ -7,7 +7,7 @@ public class GameController extends Controller {
 
     public static final int HOME = 0;
     public static final int PLAY = 1;
-    public static final int END = 2;
+    public static final int END = -1;
 
     private int gameState;
 
@@ -24,7 +24,6 @@ public class GameController extends Controller {
             highScore = currentScore;
         }
         resetScore();
-//        setGameState(HOME);
         setGameState(PLAY);
     }
 

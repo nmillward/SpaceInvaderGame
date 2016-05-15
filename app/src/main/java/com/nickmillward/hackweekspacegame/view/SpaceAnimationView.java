@@ -144,12 +144,20 @@ public class SpaceAnimationView extends FrameLayout {
                             break;
 
                         case GameController.END:
-                            //Postdelay --> restart game
+//                            Postdelay --> restart game
+                            smokes.clear();
+                            enemies.clear();
+                            treasures.clear();
                             updateRestartGame();
+//                            removeAllEnemiesAndTreasures();
+//                            Log.d("========== END:", "ENEMY TO DELETE: " + enemiesToDelete.size());
+//                            Log.d("========== END:", "TREASURE TO DELETE: " + treasuresToDelete.size());
 //                            Log.d("========== GAME STATE", "END");
                             break;
 
                         case GameController.PLAY:
+//                            Log.d("========== PLAY:", "ENEMY TO DELETE: " + enemiesToDelete.size());
+//                            Log.d("========== PLAY:", "TREASURE TO DELETE: " + treasuresToDelete.size());
 //                            Log.d("========== GAME STATE", "CASE 1");
                             if (ship != null) {
                                 ship.onFrame();
@@ -161,10 +169,10 @@ public class SpaceAnimationView extends FrameLayout {
                                 updateExplosion();
                             }
                             break;
-                    }
 
+                    }
+                    updateStar();
                 }
-                updateStar();
                 postInvalidate();
             }
         };
@@ -222,11 +230,11 @@ public class SpaceAnimationView extends FrameLayout {
                 drawCurrentScore(canvas);
             }
 
-            if (enemy != null) {
-                for (EnemySmoke enemySmoke : enemySmokes) {
-                    enemySmoke.drawSmoke(canvas);
-                }
-            }
+//            if (enemy != null) {
+//                for (EnemySmoke enemySmoke : enemySmokes) {
+//                    enemySmoke.drawSmoke(canvas);
+//                }
+//            }
 
             if (isDead) {
                 //Display Current Score
@@ -306,13 +314,13 @@ public class SpaceAnimationView extends FrameLayout {
 
     private void updateRestartGame() {
 
-        removeAllEnemiesAndTreasures();
+//        removeAllEnemiesAndTreasures();
 
         postDelayed(new Runnable() {
             @Override
             public void run() {
                 isDead = false;
-                controller.setGameState(GameController.PLAY);
+//                controller.setGameState(GameController.PLAY);
                 controller.resetGame();
 //                resetShipPosition();
             }
@@ -338,7 +346,8 @@ public class SpaceAnimationView extends FrameLayout {
 
         for (Treasure treasure : treasures) {
             treasure.y -= treasure.speed;
-            if (treasure.y < 0.f) {
+            if (treasure.y > getHeight()) {
+                Log.d("=====TREASURE", "TREASURE REMOVAL ARRAY");
                 treasure.shouldDelete = true;
             }
             if (treasure.shouldDelete) {
@@ -350,6 +359,8 @@ public class SpaceAnimationView extends FrameLayout {
         if (!treasuresToDelete.isEmpty()) {
             treasures.removeAll(treasuresToDelete);
             treasuresToDelete.clear();
+            Log.d("=====TREASURE", "TREASURE CLEARED");
+
         }
     }
 
@@ -365,13 +376,15 @@ public class SpaceAnimationView extends FrameLayout {
             enemy.speed = (getWidth() / 128) * -1;
 
             enemies.add(enemy);
+            Log.d("========== REMOVEALL:", "ENEMY TO DELETE: " + enemies.size());
         }
 
         for (Enemy enemy : enemies) {
             enemy.y -= enemy.speed * 1.5;
 
-            if (enemy.y < 0.f && !isDead) {
+            if (enemy.y > getHeight() && !isDead) {
                 enemy.shouldDelete = true;
+//                Log.d("=====ENEMY", "ENEMY REMOVAL ARRAY");
             }
             collideWithEnemy(enemy, ship);
             if (enemy.shouldDelete) {
@@ -385,11 +398,19 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     public void removeAllEnemiesAndTreasures() {
-        enemies.clear();
-        enemiesToDelete.clear();
+        Log.d("========== REMOVEALL:", "ENEMY TO DELETE: " + enemiesToDelete.size());
+        Log.d("========== REMOVEALL:", "TREASURE TO DELETE: " + treasuresToDelete.size());
 
-        treasures.clear();
-        treasuresToDelete.clear();
+        if (isDead) {
+            enemies.removeAll(enemiesToDelete);
+            enemiesToDelete.clear();
+            enemies.clear();
+
+            treasures.removeAll(treasuresToDelete);
+            treasuresToDelete.clear();
+            treasures.clear();
+        }
+
     }
 
     private void updateEnemySmoke() {
@@ -451,8 +472,9 @@ public class SpaceAnimationView extends FrameLayout {
         ArrayList<Star> removalArray = new ArrayList<>();
         for (Star star : backgroundStars) {
             star.y -= star.speed;
-            if (star.y < 0.f) {
+            if (star.y > getHeight()) {
                 removalArray.add(star);
+//                Log.d("=====STAR", "STAR REMOVAL ARRAY");
             }
         }
         backgroundStars.remove(removalArray);
@@ -494,37 +516,44 @@ public class SpaceAnimationView extends FrameLayout {
 
             //End Game
             isDead = true;
-            destroyAllEnemiesAndTreasures();
+            destroyAllEnemies();
+            destroyAllTreasures();
             controller.setGameState(GameController.END);
         }
     }
 
-    private void destroyAllEnemiesAndTreasures() {
+    private void destroyAllEnemies() {
 
         if (enemies != null && !enemies.isEmpty()) {
             for (Enemy enemy : enemies) {
                 if (enemy != null) {
-                    deleteEnemiesAndTreasures(enemy, null);
-//                    enemiesToDelete.add(enemy);
+                    deleteEnemies(enemy);
+                    enemiesToDelete.add(enemy);
                 }
             }
-//            if (!enemiesToDelete.isEmpty()) {
-//                enemies.removeAll(enemiesToDelete);
-//                enemiesToDelete.clear();
-//            }
+        }
+    }
+
+    private void destroyAllTreasures() {
+        if (treasures != null && !treasures.isEmpty()) {
+            for (Treasure treasure : treasures) {
+                if (treasure != null) {
+                    deleteTreasures(treasure);
+                    treasuresToDelete.add(treasure);
+                }
+            }
         }
 
     }
 
-    private void deleteEnemiesAndTreasures(Enemy enemy, Treasure treasure) {
+    private void deleteEnemies(Enemy enemy) {
         enemy.shouldDelete = true;
-//        postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-                addExplosion(enemy.x, enemy.y, getResources().getColor(R.color.colorWhiteLight));
-//            }
-//        }, 300);
+        addExplosion(enemy.x, enemy.y, getResources().getColor(R.color.colorWhiteLight));
+    }
 
+    private void deleteTreasures(Treasure treasure) {
+        treasure.shouldDelete = true;
+        addExplosion(treasure.x, treasure.y, getResources().getColor(R.color.treasureColor));
     }
 
     private void updateExplosion() {
