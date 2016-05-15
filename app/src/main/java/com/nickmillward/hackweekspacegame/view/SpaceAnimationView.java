@@ -49,6 +49,7 @@ public class SpaceAnimationView extends FrameLayout {
 
     private static final Object spaceViewLock = new Object();
 
+    private Paint restartPaint;
     private Paint scorePaint;
     private Paint starPaint;
     private int backgroundStarTicker;
@@ -84,6 +85,8 @@ public class SpaceAnimationView extends FrameLayout {
     private float maxX, maxY;
     private float touchSlop;
 
+    private int height, width;
+
     public SpaceAnimationView(Context context) {
         this(context, null);
     }
@@ -97,14 +100,19 @@ public class SpaceAnimationView extends FrameLayout {
         starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         explosionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+        restartPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        restartPaint.setStyle(Paint.Style.STROKE);
+        restartPaint.setStrokeWidth(2);
+        restartPaint.setTextSize(getResources().getDimension(R.dimen.font_size_score_small));
+        restartPaint.setTextAlign(Paint.Align.CENTER);
+        restartPaint.setColor(getResources().getColor(R.color.shipColor));
+
         scorePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         scorePaint.setStyle(Paint.Style.STROKE);
         scorePaint.setStrokeWidth(4);
         scorePaint.setTextSize(getResources().getDimension(R.dimen.font_size_score));
         scorePaint.setTextAlign(Paint.Align.CENTER);
         scorePaint.setColor(getResources().getColor(R.color.colorWhiteLight));
-
-
 
 //        controller = (GameController) SpaceGameApplication.getController(Controller.GAME_CONTROLLER);
         controller = new GameController();
@@ -127,21 +135,22 @@ public class SpaceAnimationView extends FrameLayout {
             @Override
             public void run() {
                 synchronized (spaceViewLock) {
-                    Log.d("========== GAME STATE", "RUN");
+//                    Log.d("========== GAME STATE", "RUN");
                     switch (controller.getGameState()) {
 
                         case GameController.HOME:
-                            Log.d("========== GAME STATE", "HOME");
+//                            Log.d("========== GAME STATE", "HOME");
                             //Show Home Panel
                             break;
 
                         case GameController.END:
-                            //Show Game Score vs High Score Panel
-                            Log.d("========== GAME STATE", "END");
+                            //Postdelay --> restart game
+                            updateRestartGame();
+//                            Log.d("========== GAME STATE", "END");
                             break;
 
                         case GameController.PLAY:
-                            Log.d("========== GAME STATE", "CASE 1");
+//                            Log.d("========== GAME STATE", "CASE 1");
                             if (ship != null) {
                                 ship.onFrame();
 //                                updateStar();
@@ -234,8 +243,8 @@ public class SpaceAnimationView extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
-        int width = MeasureSpec.getSize(widthMeasureSpec);
+        height = MeasureSpec.getSize(heightMeasureSpec);
+        width = MeasureSpec.getSize(widthMeasureSpec);
 
         if (ship == null) {
             ship = new Ship();
@@ -243,6 +252,7 @@ public class SpaceAnimationView extends FrameLayout {
             ship.setX((width / 2) - (ship.getShipWidth() / 2));         //Set ship to center X
             ship.setY(height * 3 / 4);                                    //Set ship towards bottom of screen
         }
+
         maxX = width - ship.getShipWidth();
         minX = 0;
 
@@ -293,6 +303,24 @@ public class SpaceAnimationView extends FrameLayout {
 
         }
         return super.onTouchEvent(event);
+    }
+
+    private void updateRestartGame() {
+
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                isDead = false;
+                controller.setGameState(GameController.PLAY);
+                controller.resetGame();
+//                resetShipPosition();
+            }
+        }, 3000);
+    }
+
+    private void resetShipPosition() {
+//        lastX = (getWidth() / 2) - (ship.getShipWidth() / 2);         //Set ship to center X
+//        lastY = getHeight() * 3 / 4;                                    //Set ship towards bottom of screen
     }
 
     private void updateTreasure() {
@@ -511,7 +539,6 @@ public class SpaceAnimationView extends FrameLayout {
         explosion.y = explodeY;
         explosion.color = color;
 
-
         //Explosion Animation
         final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
         anim.setDuration(800);
@@ -534,7 +561,6 @@ public class SpaceAnimationView extends FrameLayout {
                 explosion.radius = 0;
                 explosion.alpha = 0;
                 explosion.shouldDelete = true;
-                Log.d("EXPLODE", "Animation End");
             }
 
             @Override
@@ -549,7 +575,6 @@ public class SpaceAnimationView extends FrameLayout {
         });
 
         explosions.add(explosion);
-        Log.d("EXPLODE", "Ship has exploded.");
         post(new Runnable() {
             @Override
             public void run() {
@@ -576,9 +601,11 @@ public class SpaceAnimationView extends FrameLayout {
         if (controller.getCurrentScore() < controller.getHighScore()) {     //Did not set new high score
             canvas.drawText(String.format("SCORE: %s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, getHeight() / 2, scorePaint);
             canvas.drawText(String.format("HIGH SCORE: %s", scoreFormatter.format(controller.getHighScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 2, scorePaint);
+            canvas.drawText("RESTARTING..", getWidth() / 2, scorePaint.getTextSize() * 3 + getHeight() / 2, restartPaint);
         } else {    //Set new high score
             canvas.drawText("NEW HIGH SCORE!", getWidth() / 2, getHeight() / 2, scorePaint);
             canvas.drawText(String.format("SCORE: %s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 2, scorePaint);
+            canvas.drawText("RESTARTING..", getWidth() / 2, scorePaint.getTextSize() * 3 + getHeight() / 2, restartPaint);
         }
     }
 }

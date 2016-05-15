@@ -75,7 +75,7 @@ public class Ship {
         shipCanvas.drawPath(shipPath, shipPaint);
         shipCanvas.drawPath(flamePath, shipFlamePaint);
 
-        driftRange = shipWidth / 3;
+//        driftRange = shipWidth / 3;
     }
 
     public void drawShip(Canvas canvas) {
