@@ -236,7 +236,6 @@ public class SpaceAnimationView extends FrameLayout {
             }
 
             drawExplosion(canvas);
-//            drawCurrentScore(canvas);
         }
     }
 
