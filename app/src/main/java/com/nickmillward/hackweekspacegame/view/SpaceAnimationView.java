@@ -104,6 +104,8 @@ public class SpaceAnimationView extends FrameLayout {
         scorePaint.setTextAlign(Paint.Align.CENTER);
         scorePaint.setColor(getResources().getColor(R.color.colorWhiteLight));
 
+
+
 //        controller = (GameController) SpaceGameApplication.getController(Controller.GAME_CONTROLLER);
         controller = new GameController();
 
@@ -125,32 +127,35 @@ public class SpaceAnimationView extends FrameLayout {
             @Override
             public void run() {
                 synchronized (spaceViewLock) {
+                    Log.d("========== GAME STATE", "RUN");
+                    switch (controller.getGameState()) {
 
-//                    switch (controller.getGameState()) {
-//
-//                        case GameController.HOME:
-//                            //Show Home Panel
-//                            break;
-//
-//                        case GameController.END:
-//                            //Show Game Score vs High Score Panel
-//                            break;
-//
-//                        case GameController.PLAY:
+                        case GameController.HOME:
+                            Log.d("========== GAME STATE", "HOME");
+                            //Show Home Panel
+                            break;
+
+                        case GameController.END:
+                            //Show Game Score vs High Score Panel
+                            Log.d("========== GAME STATE", "END");
+                            break;
+
+                        case GameController.PLAY:
+                            Log.d("========== GAME STATE", "CASE 1");
                             if (ship != null) {
                                 ship.onFrame();
-                                updateStar();
+//                                updateStar();
                                 updateSmoke();
                                 updateEnemy();
 //                        updateEnemySmoke();
                                 updateTreasure();
                                 updateExplosion();
                             }
-//                            break;
-//                    }
+                            break;
+                    }
 
                 }
-//                updateStar();
+                updateStar();
                 postInvalidate();
             }
         };
@@ -161,6 +166,7 @@ public class SpaceAnimationView extends FrameLayout {
             spaceViewTimer = new Timer();
         }
         if (spaceViewTask == null) {
+            controller.setGameState(GameController.PLAY);
             initSpaceViewTask();
         } else {
             spaceViewTask.cancel();
@@ -204,6 +210,7 @@ public class SpaceAnimationView extends FrameLayout {
                 for (Treasure treasure : treasures) {
                     treasure.drawTreasure(canvas);
                 }
+                drawCurrentScore(canvas);
             }
 
             if (enemy != null) {
@@ -212,8 +219,14 @@ public class SpaceAnimationView extends FrameLayout {
                 }
             }
 
+            if (isDead) {
+                //Display Current Score
+                //Display High Score
+                //Display button to restart game
+            }
+
             drawExplosion(canvas);
-            drawScore(canvas);
+//            drawCurrentScore(canvas);
         }
     }
 
@@ -444,11 +457,12 @@ public class SpaceAnimationView extends FrameLayout {
 
         if (Math.abs(enemy.x - (ship.getX())) <= enemy.diameter &&
                 Math.abs(enemy.y - (ship.getY())) <= enemy.diameter && !isDead) {
-            addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.colorWhiteLight));
-            isDead = true;
+            addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.shipColor));
 
             //End Game
-//            destroyAllEnemiesAndTreasures();
+            isDead = true;
+            destroyAllEnemiesAndTreasures();
+            controller.setGameState(GameController.END);
         }
     }
 
@@ -458,21 +472,26 @@ public class SpaceAnimationView extends FrameLayout {
             for (Enemy enemy : enemies) {
                 if (enemy != null) {
                     deleteEnemiesAndTreasures(enemy, null);
-                    enemiesToDelete.add(enemy);
+//                    enemiesToDelete.add(enemy);
                 }
             }
-            if (!enemiesToDelete.isEmpty()) {
-                enemies.removeAll(enemiesToDelete);
-                enemiesToDelete.clear();
-            }
+//            if (!enemiesToDelete.isEmpty()) {
+//                enemies.removeAll(enemiesToDelete);
+//                enemiesToDelete.clear();
+//            }
         }
 
     }
 
     private void deleteEnemiesAndTreasures(Enemy enemy, Treasure treasure) {
         enemy.shouldDelete = true;
+//        postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+                addExplosion(enemy.x, enemy.y, getResources().getColor(R.color.colorWhiteLight));
+//            }
+//        }, 300);
 
-        addExplosion(enemy.x, enemy.y, getResources().getColor(R.color.colorWhiteLight));
     }
 
     private void updateExplosion() {
@@ -547,7 +566,7 @@ public class SpaceAnimationView extends FrameLayout {
         }
     }
 
-    private void drawScore(Canvas canvas) {
+    private void drawCurrentScore(Canvas canvas) {
         canvas.drawText("SCORE ", getWidth() / 2, getHeight() / 18, scorePaint);
         canvas.drawText(String.format("%s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 18, scorePaint);
     }
