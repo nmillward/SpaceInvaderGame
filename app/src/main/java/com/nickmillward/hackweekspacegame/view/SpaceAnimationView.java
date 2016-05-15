@@ -69,6 +69,7 @@ public class SpaceAnimationView extends FrameLayout {
     private ArrayList<Treasure> treasures;
     private ArrayList<Treasure> treasuresToDelete;
 
+    private int explosionTicker;
     private Paint explosionPaint;
     private ArrayList<Explosion> explosions;
     private ArrayList<Explosion> explosionsToDelete;
@@ -297,7 +298,7 @@ public class SpaceAnimationView extends FrameLayout {
         if (enemyTicker++ == FOREGROUND_INTERVAL) {
             enemyTicker = 0;
 
-            float diameter = (float) (ship.getShipWidth() * 1/2 + (Math.random() * (ship.getShipWidth() * 1/2)));
+            float diameter = (float) (ship.getShipWidth() * 1 / 2 + (Math.random() * (ship.getShipWidth() * 1 / 2)));
             Enemy enemy = new Enemy(diameter);
             enemy.x = (float) (Math.random() * getWidth());
             enemy.y = 0;
@@ -353,7 +354,7 @@ public class SpaceAnimationView extends FrameLayout {
     private void updateSmoke() {
         if (smokeTicker++ == SMOKE_INTERVAL) {
             //emit smoke
-            Smoke smoke = new Smoke(ship.getShipWidth() / 4);
+            Smoke smoke = new Smoke(ship.getShipWidth() / 5);
             float smokeDisplacement = (float) (-ship.getShipHeight() / 6 + Math.random() * ship.getShipHeight() / 2);
             smoke.y = ship.getY() + ship.getShipHeight();
             smoke.x = ship.getX() + ship.getShipWidth() / 2 - smoke.diameter + smokeDisplacement;
