@@ -429,11 +429,31 @@ public class SpaceAnimationView extends FrameLayout {
             isDead = true;
 
             //End Game
+//            destroyAllEnemiesAndTreasures();
         }
     }
 
-    private void destroyAllEnemies() {
+    private void destroyAllEnemiesAndTreasures() {
 
+        if (enemies != null && !enemies.isEmpty()) {
+            for (Enemy enemy : enemies) {
+                if (enemy != null) {
+                    deleteEnemiesAndTreasures(enemy, null);
+                    enemiesToDelete.add(enemy);
+                }
+            }
+            if (!enemiesToDelete.isEmpty()) {
+                enemies.removeAll(enemiesToDelete);
+                enemiesToDelete.clear();
+            }
+        }
+
+    }
+
+    private void deleteEnemiesAndTreasures(Enemy enemy, Treasure treasure) {
+        enemy.shouldDelete = true;
+
+        addExplosion(enemy.x, enemy.y, getResources().getColor(R.color.colorWhiteLight));
     }
 
     private void updateExplosion() {
