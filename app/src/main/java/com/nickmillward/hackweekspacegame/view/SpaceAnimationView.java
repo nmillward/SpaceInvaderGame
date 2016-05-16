@@ -279,9 +279,9 @@ public class SpaceAnimationView extends FrameLayout {
                         ship.setX(Math.min(maxX, Math.max(minX, MathUtil.lerp(ship.getX(), ship.getX() + deltaX, 1.0f))));  //1.0f = 100% to follow finger movement
                         ship.setY(Math.min(maxY, Math.max(minY, MathUtil.lerp(ship.getY(), ship.getY() + deltaY, 1.0f))));
                         if (deltaX > 0) {
-                            ship.setRotation(MathUtil.lerp(ship.getRotation(), ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.5f));
+                            ship.setRotation(MathUtil.lerp(ship.getRotation(), ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), .5f));
                         } else if (deltaX < 0) {
-                            ship.setRotation(MathUtil.lerp(ship.getRotation(), -ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), 0.5f));
+                            ship.setRotation(MathUtil.lerp(ship.getRotation(), -ROTATION_RANGE * Math.min(1.f, Math.abs(deltaX) / touchSlop), .5f));
                         }
 //                        else if (deltaY > 0) {
 //                            //TODO: Tilt ship forward
@@ -519,7 +519,6 @@ public class SpaceAnimationView extends FrameLayout {
                 }
             }
         }
-
     }
 
     private void deleteEnemies(Enemy enemy) {
@@ -529,7 +528,7 @@ public class SpaceAnimationView extends FrameLayout {
 
     private void deleteTreasures(Treasure treasure) {
         treasure.shouldDelete = true;
-        addExplosion(treasure.x, treasure.y, getResources().getColor(R.color.treasureColor));
+        addTreasureExplosion(treasure.x, treasure.y, getResources().getColor(R.color.treasureColor));
     }
 
     private void updateExplosion() {
