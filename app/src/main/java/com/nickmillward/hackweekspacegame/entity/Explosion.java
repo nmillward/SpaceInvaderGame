@@ -12,6 +12,9 @@ public class Explosion {
     public int radius;
     public boolean shouldDelete;
 
+    public int radiusMult;
+    public int duration;
+
 //    private Bitmap explosionBitmap;
 //    private Matrix explosionMatrix = new Matrix();
 //    private Paint explosionPaint;

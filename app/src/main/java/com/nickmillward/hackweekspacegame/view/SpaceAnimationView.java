@@ -478,7 +478,7 @@ public class SpaceAnimationView extends FrameLayout {
 
             controller.incrementCurrentScore(TREASURE_POINT_VAL);
             treasuresToDelete.add(treasure);
-            addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.treasureColor));
+            addTreasureExplosion(treasure.x, treasure.y, getResources().getColor(R.color.treasureColor));
         }
     }
 
@@ -609,6 +609,58 @@ public class SpaceAnimationView extends FrameLayout {
         });
 
     }
+
+    private void addTreasureExplosion(float explodeX, float explodeY, int color) {
+        final Explosion explosion = new Explosion();
+        explosion.x = explodeX;
+        explosion.y = explodeY;
+        explosion.color = color;
+
+        //Explosion Animation
+        final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
+        anim.setDuration(400);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                explosion.radius = (int) (getHeight() / 5 * valueAnimator.getAnimatedFraction());
+                explosion.alpha = (int) (255 * (1 - valueAnimator.getAnimatedFraction()));
+            }
+        });
+
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                explosion.radius = 0;
+                explosion.alpha = 0;
+                explosion.shouldDelete = true;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        });
+
+        explosions.add(explosion);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                anim.start();
+            }
+        });
+
+    }
+
 
     private void drawExplosion(Canvas canvas) {
         for (Explosion explosion : explosions) {
