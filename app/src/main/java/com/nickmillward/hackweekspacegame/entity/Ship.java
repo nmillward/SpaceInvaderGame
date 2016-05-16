@@ -57,8 +57,8 @@ public class Ship {
         shipPath.moveTo(0, shipHeight - shipBottomCorner);              //Left most point of ship
         shipPath.lineTo(shipWidth / 2, 0);                              //Front of ship
         shipPath.lineTo(shipWidth, shipHeight - shipBottomCorner);      //Right most point of ship
-        shipPath.lineTo(shipWidth - shipBottomCorner, shipHeight);      //Bottom Right
-        shipPath.lineTo(shipBottomCorner, shipHeight);                  //Bottom Left
+        shipPath.lineTo(shipWidth - shipBottomCorner, shipHeight - shipBottomCorner / 2);      //Bottom Right
+        shipPath.lineTo(shipBottomCorner, shipHeight - shipBottomCorner / 2);                  //Bottom Left
         shipPath.close();
 
         Path flamePath = new Path();
