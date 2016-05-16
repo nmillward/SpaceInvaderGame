@@ -36,8 +36,6 @@ public class Smoke {
         canvas.drawColor(0xFFF4F4F4); //light white
 //        canvas.drawColor(0xffcccccc); //light grey
 //        canvas.drawColor(0xff616161); //grey
-//        canvas.drawColor(0x88ff0000);   //red
-//        canvas.drawColor(0x88fb7200);   //orange
     }
 
     public void drawSmoke(Canvas canvas) {

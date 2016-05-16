@@ -1,6 +1,8 @@
 package com.nickmillward.hackweekspacegame.view;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -135,36 +137,24 @@ public class SpaceAnimationView extends FrameLayout {
             @Override
             public void run() {
                 synchronized (spaceViewLock) {
-//                    Log.d("========== GAME STATE", "RUN");
                     switch (controller.getGameState()) {
 
                         case GameController.HOME:
-//                            Log.d("========== GAME STATE", "HOME");
-                            //Show Home Panel
                             break;
 
                         case GameController.END:
-//                            Postdelay --> restart game
                             smokes.clear();
                             enemies.clear();
                             treasures.clear();
                             updateRestartGame();
-//                            removeAllEnemiesAndTreasures();
-//                            Log.d("========== END:", "ENEMY TO DELETE: " + enemiesToDelete.size());
-//                            Log.d("========== END:", "TREASURE TO DELETE: " + treasuresToDelete.size());
-//                            Log.d("========== GAME STATE", "END");
                             break;
 
                         case GameController.PLAY:
-//                            Log.d("========== PLAY:", "ENEMY TO DELETE: " + enemiesToDelete.size());
-//                            Log.d("========== PLAY:", "TREASURE TO DELETE: " + treasuresToDelete.size());
-//                            Log.d("========== GAME STATE", "CASE 1");
                             if (ship != null) {
                                 ship.onFrame();
-//                                updateStar();
                                 updateSmoke();
                                 updateEnemy();
-//                        updateEnemySmoke();
+//                                updateEnemySmoke();
                                 updateTreasure();
                                 updateExplosion();
                             }
@@ -224,22 +214,16 @@ public class SpaceAnimationView extends FrameLayout {
                 for (Enemy enemy : enemies) {
                     enemy.drawEnemy(canvas);
                 }
+//                for (EnemySmoke enemySmoke : enemySmokes) {
+//                    enemySmoke.drawSmoke(canvas);
+//                }
                 for (Treasure treasure : treasures) {
                     treasure.drawTreasure(canvas);
                 }
                 drawCurrentScore(canvas);
             }
 
-//            if (enemy != null) {
-//                for (EnemySmoke enemySmoke : enemySmokes) {
-//                    enemySmoke.drawSmoke(canvas);
-//                }
-//            }
-
             if (isDead) {
-                //Display Current Score
-                //Display High Score
-                //Display button to restart game
                 drawEndGameResults(canvas);
             }
 
@@ -257,7 +241,7 @@ public class SpaceAnimationView extends FrameLayout {
             ship = new Ship();
             ship.createShipBitmap(width);
             ship.setX((width / 2) - (ship.getShipWidth() / 2));         //Set ship to center X
-            ship.setY(height * 3 / 4);                                    //Set ship towards bottom of screen
+            ship.setY(height * 3 / 4);                                  //Set ship towards bottom of screen
         }
 
         maxX = width - ship.getShipWidth();
@@ -314,13 +298,10 @@ public class SpaceAnimationView extends FrameLayout {
 
     private void updateRestartGame() {
 
-//        removeAllEnemiesAndTreasures();
-
         postDelayed(new Runnable() {
             @Override
             public void run() {
                 isDead = false;
-//                controller.setGameState(GameController.PLAY);
                 controller.resetGame();
 //                resetShipPosition();
             }
@@ -346,8 +327,8 @@ public class SpaceAnimationView extends FrameLayout {
 
         for (Treasure treasure : treasures) {
             treasure.y -= treasure.speed;
+
             if (treasure.y > getHeight()) {
-                Log.d("=====TREASURE", "TREASURE REMOVAL ARRAY");
                 treasure.shouldDelete = true;
             }
             if (treasure.shouldDelete) {
@@ -359,8 +340,6 @@ public class SpaceAnimationView extends FrameLayout {
         if (!treasuresToDelete.isEmpty()) {
             treasures.removeAll(treasuresToDelete);
             treasuresToDelete.clear();
-            Log.d("=====TREASURE", "TREASURE CLEARED");
-
         }
     }
 
@@ -369,14 +348,13 @@ public class SpaceAnimationView extends FrameLayout {
         if (enemyTicker++ == FOREGROUND_INTERVAL) {
             enemyTicker = 0;
 
-            float diameter = (float) (ship.getShipWidth() * 1 / 2 + (Math.random() * (ship.getShipWidth() * 1 / 2)));
+            float diameter = (float) (ship.getShipWidth() / 2 + (Math.random() * (ship.getShipWidth() / 2)));
             Enemy enemy = new Enemy(diameter);
             enemy.x = (float) (Math.random() * getWidth());
             enemy.y = 0;
             enemy.speed = (getWidth() / 128) * -1;
 
             enemies.add(enemy);
-            Log.d("========== REMOVEALL:", "ENEMY TO DELETE: " + enemies.size());
         }
 
         for (Enemy enemy : enemies) {
@@ -384,7 +362,6 @@ public class SpaceAnimationView extends FrameLayout {
 
             if (enemy.y > getHeight() && !isDead) {
                 enemy.shouldDelete = true;
-//                Log.d("=====ENEMY", "ENEMY REMOVAL ARRAY");
             }
             collideWithEnemy(enemy, ship);
             if (enemy.shouldDelete) {
@@ -398,8 +375,6 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     public void removeAllEnemiesAndTreasures() {
-        Log.d("========== REMOVEALL:", "ENEMY TO DELETE: " + enemiesToDelete.size());
-        Log.d("========== REMOVEALL:", "TREASURE TO DELETE: " + treasuresToDelete.size());
 
         if (isDead) {
             enemies.removeAll(enemiesToDelete);
@@ -414,25 +389,28 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     private void updateEnemySmoke() {
-        if (enemySmokeTicker++ == FOREGROUND_INTERVAL) {
-            EnemySmoke smoke = new EnemySmoke(enemy.getDiameter());
-            smoke.x = enemy.x;
-            smoke.y = enemy.y;
-            Log.d("========== ENEMY SMOKE", String.valueOf(smoke.y) + ", " + String.valueOf(smoke.x));
-            enemySmokes.add(smoke);
-            enemySmokeTicker = 0;
-        }
+        for (Enemy enemy : enemies) {
+            if (enemySmokeTicker++ == FOREGROUND_INTERVAL) {
+                EnemySmoke smoke = new EnemySmoke(enemy.diameter);
+                smoke.x = enemy.getX();
+                smoke.y = enemy.getY();
+                Log.d("========== ENEMY SMOKE", String.valueOf(smoke.y) + ", " + String.valueOf(smoke.x));
+                enemySmokes.add(smoke);
+                enemySmokeTicker = 0;
+            }
 
-        ArrayList<EnemySmoke> removalArray = new ArrayList<>();
-        for (EnemySmoke enemySmoke : enemySmokes) {
-            enemySmoke.y = MathUtil.lerp(enemySmoke.y, -ship.getShipHeight() / 2, -.01f * enemySmoke.rotation / 400);
-            if (enemySmoke.y <= enemy.y - ship.getShipHeight() * 3) {
-                removalArray.add(enemySmoke);
-                Log.d("ENEMY SMOKE", "GOT HERE 2");
+            ArrayList<EnemySmoke> removalArray = new ArrayList<>();
+            for (EnemySmoke enemySmoke : enemySmokes) {
+                enemySmoke.y = MathUtil.lerp(enemySmoke.y, -ship.getShipHeight() / 2, -.01f * enemySmoke.rotation / 400);
+                if (enemySmoke.y <= enemy.y - ship.getShipHeight() * 3) {
+                    removalArray.add(enemySmoke);
+                }
+
+
+                enemySmokes.removeAll(removalArray);
+                removalArray.clear();
             }
         }
-        enemySmokes.removeAll(removalArray);
-        removalArray.clear();
     }
 
     private void updateSmoke() {
@@ -474,7 +452,6 @@ public class SpaceAnimationView extends FrameLayout {
             star.y -= star.speed;
             if (star.y > getHeight()) {
                 removalArray.add(star);
-//                Log.d("=====STAR", "STAR REMOVAL ARRAY");
             }
         }
         backgroundStars.remove(removalArray);
@@ -503,7 +480,6 @@ public class SpaceAnimationView extends FrameLayout {
             treasuresToDelete.add(treasure);
             addExplosion(ship.getX(), ship.getY(), getResources().getColor(R.color.treasureColor));
         }
-        //TODO: Add Treasure Collected Animation
     }
 
     private void collideWithEnemy(Enemy enemy, Ship ship) {
@@ -566,7 +542,24 @@ public class SpaceAnimationView extends FrameLayout {
         explosionsToDelete.clear();
     }
 
-    public void addExplosion(float explodeX, float explodeY, int color) {
+    private void pulseAnimation(Object object) {
+        final ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(object,
+                PropertyValuesHolder.ofFloat("scaleX", 1.2f),
+                PropertyValuesHolder.ofFloat("scaleY", 1.2f));
+        scaleDown.setDuration(300);
+
+        scaleDown.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleDown.setRepeatCount(ObjectAnimator.REVERSE);
+
+        post(new Runnable() {
+            @Override
+            public void run() {
+                scaleDown.start();
+            }
+        });
+    }
+
+    private void addExplosion(float explodeX, float explodeY, int color) {
         final Explosion explosion = new Explosion();
         explosion.x = explodeX;
         explosion.y = explodeY;
@@ -631,7 +624,7 @@ public class SpaceAnimationView extends FrameLayout {
     }
 
     private void drawEndGameResults(Canvas canvas) {
-        if (controller.getCurrentScore() < controller.getHighScore()) {     //Did not set new high score
+        if (controller.getCurrentScore() < controller.getHighScore() || controller.getCurrentScore() == 0) {     //Did not set new high score
             canvas.drawText(String.format("SCORE: %s", scoreFormatter.format(controller.getCurrentScore())), getWidth() / 2, getHeight() / 2, scorePaint);
             canvas.drawText(String.format("HIGH SCORE: %s", scoreFormatter.format(controller.getHighScore())), getWidth() / 2, scorePaint.getTextSize() + getHeight() / 2, scorePaint);
             canvas.drawText("RESTARTING..", getWidth() / 2, scorePaint.getTextSize() * 3 + getHeight() / 2, restartPaint);

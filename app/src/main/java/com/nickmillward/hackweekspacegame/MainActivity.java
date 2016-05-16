@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
         spaceView = (SpaceAnimationView) findViewById(R.id.view_spaceAnimationView);
 
-//        controller = (GameController) SpaceGameApplication.getController(Controller.GAME_CONTROLLER);
         controller = new GameController();
         controller.resetGame();
     }

@@ -36,7 +36,6 @@ public class Ship {
 
     public Ship() {
         shipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        shipPaint.setColor(ContextCompat.getColor(context, R.color.shipColor));
         shipPaint.setColor(0xFF7FD8FF);     //Light Blue
 //        shipPaint.setColor(0xff9bfad0);   //Mint Green
 

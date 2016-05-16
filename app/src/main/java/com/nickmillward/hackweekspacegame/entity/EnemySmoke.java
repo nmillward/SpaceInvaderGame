@@ -30,10 +30,7 @@ public class EnemySmoke {
     private void createSmokeBitmap() {
         smokeBitmap = Bitmap.createBitmap((int) diameter, (int) diameter, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(smokeBitmap);
-        canvas.drawColor(0xffcccccc); //light grey
-//        canvas.drawColor(0xff616161); //grey
-//        canvas.drawColor(0x88ff0000);   //red
-//        canvas.drawColor(0x88fb7200);   //orange
+        canvas.drawColor(0xFFF4F4F4); //light grey
     }
 
     public void drawSmoke(Canvas canvas) {

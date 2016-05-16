@@ -26,8 +26,6 @@ public class Treasure {
         this.diameter = diameter;
 
         treasurePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        treasurePaint.setStyle(Paint.Style.STROKE);
-//        treasurePaint.setStrokeWidth(diameter / 10);
         treasurePaint.setColor(0xFF72FF66);     //Lime Green
 //        treasurePaint.setColor(0xffffd700);     //Gold
 
@@ -38,12 +36,10 @@ public class Treasure {
 
     public void createTreasureBitmap() {
 
-//        Path treasurePath = new Path();
-
         treasureBitmap = Bitmap.createBitmap((int) diameter, (int) diameter, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(treasureBitmap);
-//        canvas.drawPath(treasurePath, treasurePaint);
         canvas.drawCircle(diameter / 2, diameter / 2 , diameter / 2, treasurePaint);
+
     }
 
     public void drawTreasure(Canvas canvas) {
