@@ -154,7 +154,6 @@ public class SpaceAnimationView extends FrameLayout {
                                 ship.onFrame();
                                 updateSmoke();
                                 updateEnemy();
-//                                updateEnemySmoke();
                                 updateTreasure();
                                 updateExplosion();
                             }
